@@ -1,0 +1,50 @@
+{
+  "name": "nodebox",
+  "productName": "NodeBox",
+  "version": "0.1.0",
+  "description": "Scan a Node project folder and explain it as animated flows: routes, files and functions, from browser to data. Local only, read-only, updates live.",
+  "license": "MIT",
+  "private": false,
+  "bin": {
+    "nodebox": "bin/nodebox.js"
+  },
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node bin/nodebox.js serve",
+    "app": "node bin/nodebox-app.js",
+    "test": "node --test test/scan.test.js",
+    "dist": "../paperbox/node_modules/.bin/electron-builder --mac dir",
+    "dist:win": "electron-builder --win msi --x64 --config electron-builder.win.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "typescript": "~5.6.3"
+  },
+  "build": {
+    "appId": "local.nodebox.desktop",
+    "productName": "NodeBox",
+    "npmRebuild": false,
+    "asar": true,
+    "files": [
+      "src/**",
+      "web/**",
+      "package.json",
+      "node_modules/typescript/lib/typescript.js",
+      "node_modules/typescript/package.json",
+      "build/icon-source.png"
+    ],
+    "electronDist": "../paperbox/node_modules/electron/dist",
+    "electronVersion": "45.4.1",
+    "mac": {
+      "target": "dir",
+      "category": "public.app-category.developer-tools",
+      "identity": null,
+      "icon": "build/icon.icns"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}

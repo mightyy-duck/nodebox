@@ -1,0 +1,20 @@
+name: Windows MSI
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+jobs:
+  msi:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install
+      - run: npm install --no-save electron@45.4.1 electron-builder@26.18.0
+      - run: npm test
+      - run: npx electron-builder --win msi --x64 --config electron-builder.win.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NodeBox-msi
+          path: dist-win/*.msi

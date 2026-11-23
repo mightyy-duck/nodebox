@@ -1,0 +1,28 @@
+{
+  "appId": "local.nodebox.desktop",
+  "productName": "NodeBox",
+  "npmRebuild": false,
+  "asar": true,
+  "files": [
+    "src/**",
+    "web/**",
+    "package.json",
+    "node_modules/typescript/lib/typescript.js",
+    "node_modules/typescript/package.json",
+    "build/icon-source.png"
+  ],
+  "electronVersion": "45.4.1",
+  "directories": { "output": "dist-win" },
+  "win": {
+    "target": [{ "target": "msi", "arch": ["x64"] }],
+    "icon": "build/icon-source.png"
+  },
+  "msi": {
+    "oneClick": false,
+    "perMachine": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "runAfterFinish": false
+  },
+  "artifactName": "NodeBox-${version}-${arch}.${ext}"
+}

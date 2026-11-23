@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NodeBox</title>
+<style>
+  :root {
+    --bg:#0b0b0c; --panel:#131315; --line:#26262b; --text:#ececef; --dim:#8e8e98; --strong:#ffffff; --field:#19191c; --btn:#1b1b1f; --bd:#33333a; --hover:#202024; --on:#1f1f24; --sub:#c4c4cc; --sub2:#d6d6dc; --faint:#6b6b75; --scrim:rgba(0,0,0,.7);
+    --c:#ff7b62; --btn-text:#1a0d0a;
+    --k-user:#9a9aa6; --k-browser:#b9a4ff; --k-security:#ff7b62; --k-server:#f4e07a; --k-code:#f09fcb; --k-data:#ffb070; --k-cloud:#f6efe4;
+    --l-you:#9a9aa6; --l-ui:#b9a4ff; --l-srv:#f4e07a; --l-db:#ffb070; --l-az:#f09fcb;
+    --cat-Dataflow:#ff7b62; --cat-Feature:#f4e07a; --cat-Function:#b9a4ff; --cat-Route:#ffb070;
+    --node-fill:#141416; --node-under:#0b0b0c; --title:#ffffff; --desc:#a9a9b3; --route:#34343a; --num:#0b0b0c; --laneop:.05; --dot:#ffd23f; --g1:#ff7b62; --g2:#f09fcb; --g3:#b9a4ff; --g4:#f4e07a;
+    --sh-a:0 0 12px; --sh-b:0 0 4px;
+    --brand: linear-gradient(90deg,#ff7b62,#f09fcb,#b9a4ff,#f4e07a);
+  }
+  [data-theme="light"] {
+    --bg:#fbf9f7; --panel:#ffffff; --line:#ebe5e0; --text:#231f20; --dim:#7a716d; --strong:#120f10; --field:#f6f2ef; --btn:#ffffff; --bd:#d8d0ca; --hover:#f3eeea; --on:#fdeeea; --sub:#4a4240; --sub2:#3b3533; --faint:#9b918c; --scrim:rgba(60,40,30,.3);
+    --c:#e0583f; --btn-text:#ffffff;
+    --k-user:#6f6a72; --k-browser:#7b5fe0; --k-security:#e0503a; --k-server:#b98f00; --k-code:#d0479a; --k-data:#dc7424; --k-cloud:#7f6f63;
+    --l-you:#7a716d; --l-ui:#7b5fe0; --l-srv:#b98f00; --l-db:#dc7424; --l-az:#d0479a;
+    --cat-Dataflow:#e0503a; --cat-Feature:#b98f00; --cat-Function:#7b5fe0; --cat-Route:#dc7424;
+    --node-fill:#ffffff; --node-under:#fbf9f7; --title:#120f10; --desc:#5b524e; --route:#d8d0ca; --num:#ffffff; --laneop:.08; --dot:#f59e0b; --g1:#e0583f; --g2:#d0479a; --g3:#7b5fe0; --g4:#d9a400;
+    --sh-a:0 3px 10px; --sh-b:0 1px 3px;
+  }
+  /* smooth theme change: only while switching */
+  .theming, .theming *, .theming *::before, .theming *::after { transition: background-color .5s ease, color .5s ease, border-color .5s ease, fill .5s ease, stroke .5s ease, box-shadow .5s ease, filter .5s ease, opacity .5s ease, text-shadow .5s ease !important; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  #app { display: grid; grid-template-columns: 310px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100vh; overflow: hidden; }
+  #app { transition: grid-template-columns .25s ease; }
+  #app.sbhide { grid-template-columns: 0px minmax(0, 1fr) !important; }
+  #app.sbhide aside { visibility: hidden; border-right: 0; overflow: hidden; min-width: 0; width: 0; padding: 0; }
+  #sbopen { position: fixed; left: 12px; top: 12px; z-index: 6; display: none; padding: 6px 11px; font-size: 15px; }
+  .sbhide-on #sbopen { display: block; }
+  .sbhide-on header { padding-left: 66px; }
+  #carside { display: none; flex: 1; min-height: 0; overflow: auto; padding: 4px 14px 12px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--sub); }
+  .driveside #carside { display: block; } .driveside #q, .driveside #menu { display: none; }
+  #carside h4 { margin: 14px 0 6px; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+  #carside h4:first-child { margin-top: 6px; }
+  #carside ul { margin: 0; padding: 0; list-style: none; }
+  #carside li { position: relative; padding: 2px 0 2px 16px; line-height: 1.45; }
+  #carside li::before { content: ''; position: absolute; left: 3px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--faint); }
+  #carside li.sw::before { width: 9px; height: 9px; top: 7px; left: 0; }
+  #carside li.sw.amber::before { background: #ffb02e; } #carside li.sw.green::before { background: #4cd9a3; } #carside li.sw.red::before { background: #ff5470; } #carside li.sw.ring::before { background: transparent; border: 2px dashed var(--g3); box-sizing: border-box; }
+  #carside b { color: var(--strong); font-weight: 600; }
+  #carside .icons { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; }
+  #carside .icons span { white-space: nowrap; }
+  #carside .icons i { font-style: normal; display: inline-block; width: 26px; text-align: center; margin-right: 2px; }
+  #carside #drvstat { white-space: pre-line; line-height: 1.55; }
+  #carside #drvcar { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--field); }
+  #carside #drvcar .fr { margin: 3px 0; word-break: break-word; }
+  #carside #drvcar .k { display: block !important; min-width: 0 !important; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
+  #carside #drvcar code { font-size: 12px; }
+  aside { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .brand { padding: 16px 16px 8px; border-top: 3px solid transparent; border-image: var(--brand) 1; }
+  .brand h1 { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; margin: 0; color: var(--strong); display: flex; align-items: center; gap: 8px; }
+  .brand h1 img { width: 22px; height: 22px; border-radius: 6px; }
+  .brand h1 button { margin-left: auto; padding: 3px 9px; font-size: 12px; letter-spacing: 0; text-transform: none; }
+  .brand h1 button + button { margin-left: 0; }
+  .brand .proj { margin-top: 6px; font-weight: 700; color: var(--strong); word-break: break-all; cursor: pointer; border: 1px solid var(--bd); border-radius: 8px; padding: 6px 10px; background: var(--field); }
+  .brand .proj:hover { border-color: var(--c); }
+  .brand .proj::after { content: '  ▾'; color: var(--dim); font-weight: 400; }
+  .brand .meta { color: var(--dim); font-size: 12px; margin-top: 2px; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--dim); margin-top: 6px; }
+  .live i { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; }
+  .live.busy i { background: #f5b301; animation: blink .8s infinite; }
+  .live.err i { background: #ef4444; }
+  @keyframes blink { 50% { opacity: .25 } }
+  #q { margin: 8px 14px 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--bd); background: var(--field); color: var(--text); font: inherit; outline: none; }
+  #q:focus { border-color: var(--c); }
+  #menu { overflow: auto; padding: 4px 10px 40px; flex: 1; min-height: 0; }
+  .cat { margin: 12px 4px 4px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .cat i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .cat b { margin-left: auto; font-weight: 500; color: var(--faint); }
+  .grp { margin: 8px 6px 2px; font-size: 11.5px; color: var(--faint); cursor: pointer; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+  .item { padding: 6px 10px; margin: 1px 0; border-radius: 8px; cursor: pointer; color: var(--sub); border: 1px solid transparent; font-size: 13.5px; word-break: break-word; }
+  .item small { display: block; color: var(--faint); font-size: 11px; font-family: ui-monospace, Menlo, monospace; }
+  .item:hover { background: var(--hover); }
+  .item.on { background: var(--on); border-color: var(--ic, #4da3ff); color: var(--strong); }
+  .stale { color: #ffc233; font-size: 11px; margin-left: 6px; }
+  .more { color: var(--faint); font-size: 12px; padding: 6px 10px; }
+  main { display: flex; flex-direction: column; min-width: 0; min-height: 0; height: 100%; overflow: hidden; }
+  header { padding: 14px 24px 4px; }
+  header .path { color: var(--dim); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; }
+  header h2 { margin: 3px 0 2px; font-size: 21px; font-weight: 700; color: var(--strong); word-break: break-word; }
+  header p { margin: 0; color: var(--dim); font-size: 13px; font-family: ui-monospace, Menlo, monospace; }
+  .chips { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--dim); }
+  .chip { border: 1px solid var(--bd); border-radius: 999px; padding: 2px 10px; cursor: pointer; color: var(--sub); background: var(--field); }
+  .chip:hover, .chip.on { border-color: var(--c); color: var(--strong); }
+  .bar { display: flex; gap: 8px; padding: 8px 24px; align-items: center; flex-wrap: wrap; }
+  button { background: var(--btn); color: var(--text); border: 1px solid var(--bd); border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--c); }
+  .bar label { color: var(--dim); font-size: 13px; margin-left: 8px; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-left: auto; font-size: 12px; color: var(--dim); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  #stagewrap { flex: 1; min-height: 0; position: relative; }
+  #stage { position: absolute; inset: 0; overflow: auto; padding: 0 20px; }
+  #carcanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+  svg { height: auto; display: block; margin: 0 auto; max-width: none; }
+  #info { flex: none; border-top: 1px solid var(--line); background: var(--panel); padding: 12px 24px 14px; height: 210px; overflow: auto; }
+  #info .cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; }
+  #info .k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+  #info h3 { margin: 2px 0 4px; font-size: 17px; color: var(--strong); font-family: ui-monospace, Menlo, monospace; }
+  #info p { margin: 0 0 6px; color: var(--sub2); font-size: 14px; white-space: pre-wrap; }
+  .files { border-left: 1px solid var(--line); padding-left: 22px; }
+  .fr { margin: 5px 0; line-height: 1.35; }
+  .ff { display: block; color: var(--c); font: 600 12.5px ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+  .fn { color: var(--sub2); font-size: 13px; }
+  .bad .ff { color: #ffc233; text-decoration: line-through; }
+  .bad .fn::after { content: "  ⚠ not found in the code any more: " attr(data-missing); color: #ffc233; }
+  .lanelist { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 8px 22px; margin-top: 6px; }
+  .lrow { padding: 6px 10px; border-radius: 8px; cursor: pointer; border: 1px solid var(--line); }
+  .lrow:hover { border-color: var(--c); }
+  .lh { font-weight: 700; font-size: 13.5px; }
+  .node { cursor: pointer; opacity: .75; }
+  .node .body { stroke-opacity: .4; stroke-width: 1.8; }
+  .node .wash { opacity: .03; }
+  .node.reached { opacity: 1; }
+  .node.reached .body { stroke-opacity: 1; }
+  .node.reached .wash { opacity: .1; }
+  .node.active { filter: drop-shadow(var(--sh-a) var(--nk)); }
+  .node.active .body { stroke-width: 3; }
+  .node.active .wash { opacity: .22; }
+  .node.dim { opacity: .18; filter: none; }
+  .lane .lbg { opacity: var(--laneop); } .lane .lbd { stroke-opacity: .35; stroke-width: 1.5; } .lane .lhd { opacity: .1; }
+  .lane.on .lbg { opacity: .16; } .lane.on .lbd { stroke-opacity: 1; stroke-width: 3; } .lane.on .lhd { opacity: .3; }
+  .lane.off .lbg { opacity: .02; } .lane.off .lbd { stroke-opacity: .15; }
+  #empty { margin: 80px auto; max-width: 520px; text-align: center; color: var(--dim); }
+  #landing { position: fixed; inset: 0; z-index: 9; display: none; overflow: auto; background: var(--bg); }
+  #landing.on { display: block; }
+  #landing .wrap { width: min(920px, 92vw); margin: 0 auto; padding: 8vh 0 48px; }
+  #landing .hero { display: flex; align-items: center; gap: 18px; }
+  #landing .hero img { width: 64px; height: 64px; border-radius: 16px; }
+  #landing h1 { margin: 0; font-size: 34px; letter-spacing: .02em; color: var(--strong); }
+  #landing .lsub { border: 0; background: none; padding: 0; margin: 2px 0 0; color: var(--dim); font-size: 15px; }
+  #landing .bar { height: 3px; border-radius: 3px; margin: 22px 0 26px; background: var(--brand); }
+  #landing h2 { margin: 0 0 10px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+  #landing .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  #landing .card { position: relative; text-align: left; padding: 14px 16px 12px; border-radius: 12px; border: 1px solid var(--bd); background: var(--panel); cursor: pointer; transition: border-color .15s, transform .15s, background .15s; }
+  #landing .card:hover { border-color: var(--c); transform: translateY(-2px); background: var(--hover); }
+  #landing .card.off { opacity: .55; cursor: default; } #landing .card.off:hover { transform: none; border-color: var(--bd); }
+  #landing .card .nm { font-weight: 700; color: var(--strong); font-size: 16px; display: flex; align-items: center; gap: 8px; padding-right: 22px; }
+  #landing .card .nm i { font-style: normal; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--on); color: var(--c); border: 1px solid var(--bd); }
+  #landing .card code { display: block; margin-top: 4px; color: var(--dim); font-size: 11.5px; word-break: break-all; }
+  #landing .card .when { margin-top: 8px; color: var(--faint); font-size: 12px; }
+  #landing .card .x { position: absolute; top: 8px; right: 10px; color: var(--faint); padding: 2px 6px; border-radius: 6px; }
+  #landing .card .x:hover { color: var(--strong); background: var(--btn); }
+  #landing .acts { justify-content: flex-start; display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+  #landing .empty { color: var(--dim); padding: 22px; border: 1px dashed var(--bd); border-radius: 12px; }
+  #landing .foot { margin-top: 36px; color: var(--faint); font-size: 12px; }
+  #modal { position: fixed; inset: 0; background: var(--scrim); display: none; align-items: center; justify-content: center; z-index: 10; }
+  #modal.on { display: flex; }
+  .dlg { width: min(680px, 92vw); max-height: 86vh; overflow: auto; background: var(--panel); border: 1px solid var(--bd); border-radius: 14px; padding: 18px 20px; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+  .dlg h3 { margin: 0 0 4px; color: var(--strong); font-size: 18px; }
+  .dlg .hint { color: var(--dim); font-size: 13px; margin-bottom: 12px; }
+  .row { display: flex; gap: 8px; }
+  .row input { flex: 1; min-width: 0; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--bd); background: var(--field); color: var(--text); font: 13px ui-monospace, Menlo, monospace; outline: none; }
+  .row input:focus { border-color: var(--c); }
+  .checks { margin: 12px 0; min-height: 40px; }
+  .ck { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; font-size: 13.5px; }
+  .ck b { width: 18px; flex: none; }
+  .ck.ok b { color: #22c55e; } .ck.no b { color: #ef4444; } .ck.no span { color: #ef4444; }
+  .ck small { display: block; color: var(--dim); font-size: 12px; }
+  .recent { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+  .rc { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .rc:hover { background: var(--hover); }
+  .rc code { color: var(--dim); font-size: 11.5px; word-break: break-all; display: block; }
+  .rc .st { flex: none; font-weight: 700; } .rc .st.ok { color: #22c55e; } .rc .st.no { color: #ef4444; }
+  .rc .x { margin-left: auto; color: var(--faint); padding: 0 6px; }
+  .acts { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+  .acts button.primary { background: var(--brand); color: var(--btn-text); border-color: transparent; font-weight: 700; }
+  @keyframes pulse { 0%,100% { opacity: .18; transform: scale(1); } 50% { opacity: .38; transform: scale(1.25); } }
+  .halo { transform-box: fill-box; transform-origin: center; animation: pulse 1.6s ease-in-out infinite; }
+  .acts button:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+  .ovmode .bar, .ovmode #chips, .chainmode .bar, .chainmode #chips { display: none; }
+  #chainbar { display: none; gap: 8px; padding: 8px 24px; align-items: center; flex-wrap: wrap; }
+  .chainmode #chainbar { display: flex; }
+  #chainbar input[type=text], #chq { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--bd); background: var(--field); color: var(--text); font: inherit; min-width: 200px; outline: none; }
+  #chq:focus { border-color: var(--c); }
+  #chlanes { display: inline-flex; gap: 4px; }
+  #chlanes .chip { opacity: .45; } #chlanes .chip.on { opacity: 1; border-color: var(--c); color: var(--strong); }
+  #chphase { color: var(--dim); font-size: 12px; } #chcount { color: var(--faint); font-size: 12px; margin-left: auto; }
+  #chainbox { display: none; } .chainmode #chainbox svg { display: block; margin: 0 auto; }
+  .cnode { cursor: pointer; } .cnode.dim { opacity: .28; }
+  .cnode.sel .cbody { stroke-width: 2.8; } .cnode.hit .cbody { stroke-width: 3; }
+  #chloop, #cherr { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--bd); background: var(--field); color: var(--text); font: inherit; }
+  .cb { color: var(--dim); font-size: 13px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  .lod .sub, .lod .cbadge { display: none; }
+  .cnode.dd { opacity: .3; } .cbadge { fill: var(--dot); } .vmark { fill: var(--k-security); }
+  .cnode.act { filter: drop-shadow(var(--sh-a) var(--nk)); } .cnode.act .cbody { stroke-width: 3; }
+  .ovtool { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 4px 0 10px; }
+  .ovtool input[type=text] { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--bd); background: var(--field); color: var(--text); font: inherit; min-width: 240px; outline: none; }
+  .ovtool select { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--bd); background: var(--field); color: var(--text); font: inherit; }
+  .chip.sw.on { border-color: var(--c); color: var(--strong); background: var(--on); }
+  .ovg { cursor: pointer; user-select: none; } .ovg:hover { color: var(--strong); }
+  .ovbtn { float: right; margin-left: 6px; padding: 1px 8px; font-size: 11px; border-radius: 6px; }
+  .entrycard { background: var(--panel); border: 1px solid var(--c); border-radius: 12px; padding: 12px 16px; margin: 4px 0 6px; cursor: pointer; }
+  .entrycard:hover { background: var(--hover); } .entrycard h4 { margin: 0 0 2px; color: var(--strong); } .entrycard p { margin: 0; color: var(--dim); font-size: 13px; }
+  .ovmode svg { display: none; }
+  #ov { padding: 6px 4px 40px; max-width: 1400px; margin: 0 auto; }
+  .ovg { margin: 18px 0 8px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+  .ovgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+  .ovc { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+  .ovc:hover { border-color: var(--c); }
+  .ovc h4 { margin: 0; font-size: 15px; color: var(--strong); font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+  .ovc .fl { color: var(--faint); font: 11px ui-monospace, Menlo, monospace; margin: 2px 0 8px; word-break: break-all; }
+  .ovr { display: flex; gap: 6px; align-items: baseline; margin: 4px 0; font-size: 12.5px; }
+  .ovr b { flex: none; width: 58px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+  .tag { display: inline-block; border: 1px solid var(--bd); border-radius: 999px; padding: 0 8px; margin: 0 4px 3px 0; color: var(--sub2); font-size: 12px; }
+  .tag.ui { border-color: var(--k-browser); } .tag.act { border-color: var(--k-server); } .tag.api { border-color: var(--k-data); } .tag.db { border-color: var(--k-code); cursor: pointer; }
+  .tag.db:hover { background: var(--hover); }
+  .none { color: var(--faint); font-size: 12px; }
+  #toast { position: fixed; right: 18px; bottom: 230px; background: var(--panel); border: 1px solid var(--c); color: var(--text); border-radius: 10px; padding: 8px 14px; font-size: 13px; opacity: 0; transition: opacity .3s; pointer-events: none; }
+  #toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+<button id="sbopen" title="Show the sidebar (Ctrl/Cmd+B)">☰</button>
+<div id="app">
+  <aside>
+    <div class="brand">
+      <h1><img src="/icon.png" alt="">NodeBox <button id="theme" title="Dark / light theme">◐ Theme</button><button id="home" title="Start page: recent projects">⌂</button><button id="sbclose" title="Hide the sidebar (Ctrl/Cmd+B)">◀</button></h1>
+      <div class="proj" id="proj" title="Choose another project">…</div>
+      <div class="meta" id="meta"></div>
+      <div class="live" id="live"><i></i><span id="livet">connecting…</span></div>
+    </div>
+    <div id="carside"></div>
+    <input id="q" placeholder="Search routes, functions, flows…" autocomplete="off">
+    <div id="menu"></div>
+  </aside>
+  <main>
+    <header>
+      <div class="path" id="path"></div>
+      <h2 id="title"></h2>
+      <p id="subtitle"></p>
+      <div class="chips" id="chips"></div>
+    </header>
+    <div class="bar">
+      <button id="play">⏸ Pause</button>
+      <button id="prev">◀ Step</button>
+      <button id="next">Step ▶</button>
+      <button id="restart">↺ Restart</button>
+      <button id="zout" title="Zoom out (-)">−</button><span id="zv" style="min-width:44px;text-align:center;color:#7d8bb0">85%</span><button id="zin" title="Zoom in (+)">＋</button><button id="zfit">Fit</button>
+      <label>speed <input id="speed" type="range" min="0.5" max="2.5" step="0.1" value="1"></label>
+      <button id="rescan" title="Scan the project folder again">⟳ Rescan</button>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div id="chainbar">
+      <button id="chback">◀ Overview</button>
+      <input id="chq" type="text" placeholder="search in this chain…" autocomplete="off">
+      <span id="chlanes"><span class="chip on" data-l="you">people</span><span class="chip on" data-l="ui">UI</span><span class="chip on" data-l="srv">server</span><span class="chip on" data-l="db">data</span><span class="chip on" data-l="az">cloud</span></span>
+      <button id="chexp" title="Open one more level">＋ level</button><button id="chcol" title="Close one level">− level</button><button id="chall">Expand all</button><button id="chnone">Collapse all</button>
+      <button id="chrefresh" title="Reload this chain from the code (keeps the search, resets folding)">⟳ Refresh</button><button id="chdrive" title="Send cars from the start: they split at every crossroad, turn back at dead ends that return a value, and stop at a function that returns nothing">🚗 Drive</button><button id="chpause" title="Pause / resume the cars (Space)" style="display:none">⏸ Pause</button><button id="chfollow" title="Watch a request travel down and the answer come back (or double-click a box)">▶ Follow</button>
+      <select id="chloop" title="What the cars do after one run"><option value="once">run once</option><option value="repeat">repeat</option><option value="traffic">traffic (waves overlap)</option></select><select id="cherr" title="Condition: do the functions succeed or fail?"><option value="ok">all succeed</option><option value="random">random errors</option><option value="force">every risky function fails</option></select><label class="cb"><input type="checkbox" id="chcam"> follow cars</label><label class="cb"><input type="checkbox" id="chcarinfo"> car details</label><label style="color:var(--dim);font-size:13px">speed <input id="chspeed" type="range" min="0.1" max="2.5" step="0.05" value="0.6"></label>
+      <button id="chzout" title="Zoom out (also Ctrl/Cmd + scroll or pinch)">−</button><span id="chzv" style="min-width:42px;text-align:center;color:var(--dim);font-size:12px">90%</span><button id="chzin">＋</button><button id="chfit" title="Fit all expanded nodes in the view">Fit all</button>
+      <span id="chphase"></span><span id="chcount"></span>
+    </div>
+    <div id="stagewrap"><div id="stage"><svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg><div id="ov" style="display:none"></div><div id="chainbox"><div id="chainsvg"></div></div><div id="empty" style="display:none"></div></div><canvas id="carcanvas"></canvas></div>
+    <div id="info"></div>
+  </main>
+</div>
+<div id="landing"><div class="wrap">
+  <div class="hero"><img src="/icon.png" alt=""><div><h1>NodeBox</h1><p class="lsub">See how a Node project really works: routes, data flows and the call chain, drawn from your code and updated live.</p></div></div>
+  <div class="bar"></div>
+  <h2 id="lhead">Recent projects</h2>
+  <div class="cards" id="lcards"></div>
+  <div class="acts"><button id="lopen" class="primary">Open a project folder…</button><button id="lresume" style="display:none">Back to the open project</button></div>
+  <div class="foot">NodeBox only reads Node projects (a folder with a package.json) and never changes them. Everything stays on this computer.</div>
+</div></div>
+<div id="modal"><div class="dlg">
+  <h3>Open a Node project</h3>
+  <div class="hint">NodeBox reads only Node projects (a folder with a package.json). It never changes the project.</div>
+  <div class="row"><input id="pdir" placeholder="/path/to/your/node-project" spellcheck="false"><button id="pbrowse">Browse…</button></div>
+  <div class="checks" id="pchecks"></div>
+  <div class="recent" id="precent"></div>
+  <div class="acts"><button id="pcancel">Cancel</button><button id="popen" class="primary" disabled>Open project</button></div>
+</div></div>
+<div id="toast"></div>
+<script src="/chain.js"></script>
+<script>
+/* ---------- constants ---------- */
+const KIND = {
+  user:     { c: "var(--k-user)",     name: "You" },
+  browser:  { c: "var(--k-browser)",  name: "Browser" },
+  security: { c: "var(--k-security)", name: "Identity / security" },
+  server:   { c: "var(--k-server)",   name: "Server / API" },
+  code:     { c: "var(--k-code)",     name: "Code" },
+  data:     { c: "var(--k-data)",     name: "Data store" },
+  cloud:    { c: "var(--k-cloud)",    name: "Cloud / external" },
+};
+const LANE = {
+  you: { name: "PEOPLE / DEV MACHINE", c: "var(--l-you)" },
+  ui:  { name: "BROWSER / UI",         c: "var(--l-ui)" },
+  srv: { name: "SERVER",               c: "var(--l-srv)" },
+  db:  { name: "DATA STORES",          c: "var(--l-db)" },
+  az:  { name: "EXTERNAL / CLOUD",     c: "var(--l-az)" },
+};
+const LANE_ORDER = ["you", "ui", "srv", "db", "az"];
+const KIND_LANE = { user: "you", browser: "ui", security: "srv", server: "srv", code: "srv", data: "db", cloud: "az" };
+const laneOf = (f, i) => f.steps[i].lane || KIND_LANE[f.steps[i].kind] || "srv";
+const laneName = (f, l) => (f.laneNames && f.laneNames[l]) || LANE[l].name;
+
+/* ---------- theme (colours live in CSS variables; the switch is animated) ---------- */
+let theme = localStorage.getItem("nbTheme") || "dark";
+const themed = (name) => (["Dataflow", "Feature", "Function", "Route"].includes(name) ? `var(--cat-${name})` : "var(--c)");
+function applyTheme(t, animate) {
+  const root = document.documentElement;
+  const go = () => { theme = t; localStorage.setItem("nbTheme", t); root.dataset.theme = t; };
+  if (!animate) return go();
+  root.classList.add("theming"); go();
+  clearTimeout(applyTheme.tm); applyTheme.tm = setTimeout(() => root.classList.remove("theming"), 700);
+}
+document.documentElement.dataset.theme = theme;
+
+/* ---------- state ---------- */
+const $ = (id) => document.getElementById(id);
+let model = null, cats = [], openCats = {}, openGroups = {}, curId = null, cur = null, curColor = "#38d9ff", curCat = "Dataflow", sink = null;
+const NS = "http://www.w3.org/2000/svg";
+const svg = $("svg");
+const W = 236, H = 138, LW = 266, LGAP = 26, GY = 44, PAD = 22, HEAD = 46;
+let pendingSink = null, haloEl = null, pos = 0, step = 0, playing = false, dwell = 0, last = 0, total = 0, arr = [], pts = [], pathEl, trailEl, dotEl, nodeEls = [], laneEls = {}, vw = 1000, laneSel = null, zoom = +(localStorage.getItem("zoom") || 0.85);
+const el = (n, a = {}, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const wrap = (s, n, max) => { const w = String(s).split(" "), out = []; let l = ""; for (const x of w) { if ((l + " " + x).trim().length > n) { out.push(l); l = x; } else l = (l + " " + x).trim(); } if (l) out.push(l); return out.slice(0, max); };
+const toast = (m) => { const t = $("toast"); t.textContent = m; t.classList.add("on"); setTimeout(() => t.classList.remove("on"), 1800); };
+// answers that depend only on the scan are kept in memory until the project changes (no refetch, no rebuild)
+const GC = new Map();
+const get = (u) => {
+  if (!/^\/api\/(chain|flow|overview)/.test(u)) return fetch(u).then((r) => r.json());
+  if (!GC.has(u)) GC.set(u, fetch(u).then((r) => r.json()).then((j) => { if (j && j.error) GC.delete(u); return j; }));
+  return GC.get(u);
+};
+
+/* ---------- sidebar ---------- */
+function renderMenu() {
+  const q = $("q").value.trim().toLowerCase(), menu = $("menu");
+  menu.innerHTML = "";
+  const ov = document.createElement("div"); ov.className = "item" + (curId === "__overview" ? " on" : ""); ov.style.setProperty("--ic", "var(--c)"); ov.textContent = "◎  Project overview"; ov.onclick = () => showOverview(); menu.appendChild(ov);
+  for (const c of cats) {
+    const items = q ? c.items.filter((i) => (i.title + " " + i.sub + " " + i.group).toLowerCase().includes(q)) : c.items;
+    if (q && !items.length) continue;
+    const h = document.createElement("div"); h.className = "cat";
+    const cc = themed(c.name); h.innerHTML = `<i style="background:${cc}"></i><span></span><b></b>`;
+    h.querySelector("span").textContent = c.name; h.querySelector("b").textContent = items.length;
+    const open = q ? true : !!openCats[c.name];
+    h.onclick = () => { openCats[c.name] = !openCats[c.name]; renderMenu(); };
+    menu.appendChild(h);
+    if (!open) continue;
+    const addItem = (i) => {
+      const d = document.createElement("div"); d.className = "item" + (i.id === curId ? " on" : ""); d.style.setProperty("--ic", themed(c.name));
+      d.textContent = i.title;
+      if (i.stale) { const s = document.createElement("span"); s.className = "stale"; s.textContent = "⚠ " + i.stale; s.title = i.stale + " step(s) point to code that changed"; d.appendChild(s); }
+      if (i.group !== "Curated" && i.sub) { const sm = document.createElement("small"); sm.textContent = i.sub; d.appendChild(sm); }
+      d.onclick = () => select(i.id, c);
+      menu.appendChild(d);
+    };
+    if (q) { items.slice(0, 120).forEach(addItem); if (items.length > 120) { const m = document.createElement("div"); m.className = "more"; m.textContent = "… " + (items.length - 120) + " more, type to narrow"; menu.appendChild(m); } continue; }
+    const groups = new Map();
+    for (const i of items) { if (!groups.has(i.group)) groups.set(i.group, []); groups.get(i.group).push(i); }
+    const one = groups.size === 1;
+    for (const [g, list] of groups) {
+      const key = c.name + "|" + g, gopen = one || g === "Curated" || openGroups[key] || list.some((i) => i.id === curId);
+      if (!one) { const gh = document.createElement("div"); gh.className = "grp"; gh.textContent = (gopen ? "▾ " : "▸ ") + g + "  (" + list.length + ")"; gh.onclick = () => { openGroups[key] = !gopen; renderMenu(); }; menu.appendChild(gh); }
+      if (gopen) list.forEach(addItem);
+    }
+  }
+}
+
+/* ---------- diagram ---------- */
+function applyZoom() { zoom = Math.max(0.4, Math.min(1.5, zoom)); localStorage.setItem("zoom", zoom); svg.style.width = (vw * zoom) + "px"; $("zv").textContent = Math.round(zoom * 100) + "%"; }
+
+function build(flow) {
+  svg.innerHTML = ""; laneEls = {};
+  const n = flow.steps.length;
+  const lanes = LANE_ORDER.filter((l) => flow.steps.some((s, i) => laneOf(flow, i) === l));
+  const lx = (l) => PAD + lanes.indexOf(l) * (LW + LGAP);
+  vw = PAD * 2 + lanes.length * LW + (lanes.length - 1) * LGAP;
+  const vh = PAD + HEAD + n * H + (n - 1) * GY + PAD + 8;
+  svg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
+  applyZoom();
+  const defs = el("defs", {}, svg);
+  const f = el("filter", { id: "glow", x: "-50%", y: "-50%", width: "200%", height: "200%" }, defs);
+  el("feGaussianBlur", { stdDeviation: "4", result: "b" }, f);
+  const m = el("feMerge", {}, f); el("feMergeNode", { in: "b" }, m); el("feMergeNode", { in: "SourceGraphic" }, m);
+  const sty = (e, o) => { for (const k in o) e.style.setProperty(k, o[k]); return e; };
+  lanes.forEach((l) => {
+    const x = lx(l), c = LANE[l].c, g = el("g", { class: "lane" }, svg);
+    sty(el("rect", { class: "lbg", x, y: PAD, width: LW, height: vh - PAD * 2, rx: 18 }, g), { fill: c });
+    sty(el("rect", { class: "lbd", x, y: PAD, width: LW, height: vh - PAD * 2, rx: 18, fill: "none" }, g), { stroke: c });
+    sty(el("rect", { class: "lhd", x: x + 8, y: PAD + 7, width: LW - 16, height: 30, rx: 9 }, g), { fill: c });
+    const t = el("text", { x: x + LW / 2, y: PAD + 27, "text-anchor": "middle", "font-size": 12.5, "font-weight": 800, "letter-spacing": 1.6 }, g); t.textContent = laneName(flow, l); sty(t, { fill: c });
+    const hit = el("rect", { x, y: PAD, width: LW, height: 42, fill: "transparent", style: "cursor:pointer" }, g);
+    hit.addEventListener("click", () => selectLane(laneSel === l ? null : l));
+    laneEls[l] = g;
+  });
+  const centers = flow.steps.map((s, i) => ({ x: lx(laneOf(flow, i)) + LW / 2, y: PAD + HEAD + i * (H + GY) + H / 2 }));
+  const tops = centers.map((c) => ({ x: c.x, y: c.y - H / 2 })), bots = centers.map((c) => ({ x: c.x, y: c.y + H / 2 }));
+  pts = [tops[0], bots[0]];
+  for (let i = 1; i < n; i++) { const a = bots[i - 1], b = tops[i]; if (a.x !== b.x) { const ym = a.y + GY / 2; pts.push({ x: a.x, y: ym }, { x: b.x, y: ym }); } pts.push(b, bots[i]); }
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+  total = cum[cum.length - 1];
+  arr = tops.map((t) => cum[pts.findIndex((p) => p === t)]);
+  const d = pts.length > 1 ? "M" + pts.map((p) => p.x + " " + p.y).join(" L") : `M${pts[0].x} ${pts[0].y}`;
+  pathEl = sty(el("path", { d, fill: "none", "stroke-width": 2.6, "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-dasharray": "2 8" }, svg), { stroke: "var(--route)" });
+  const gr = el("linearGradient", { id: "trailgrad", gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: 0, y2: vh }, defs);
+  [["0", "--g1"], ["0.38", "--g2"], ["0.7", "--g3"], ["1", "--g4"]].forEach(([o, v]) => sty(el("stop", { offset: o }, gr), { "stop-color": `var(${v})` }));
+  trailEl = el("path", { d, fill: "none", "stroke-width": 3.6, "stroke-linecap": "round", "stroke-linejoin": "round", stroke: "url(#trailgrad)" }, svg);
+  haloEl = sty(el("circle", { r: 15, class: "halo" }, svg), { fill: "var(--dot)" });
+  dotEl = sty(el("circle", { r: 8, "stroke-width": 2.5 }, svg), { fill: "var(--dot)", stroke: "var(--node-under)" });
+  nodeEls = flow.steps.map((s, i) => {
+    const c = centers[i], col = (KIND[s.kind] || KIND.code).c, g = el("g", { class: "node" }, svg);
+    g.style.setProperty("--nk", col);
+    const x = c.x - W / 2, y = c.y - H / 2;
+    sty(el("rect", { x, y, width: W, height: H, rx: 12 }, g), { fill: "var(--node-under)" });
+    sty(el("rect", { class: "body", x, y, width: W, height: H, rx: 12 }, g), { fill: "var(--node-fill)", stroke: col });
+    sty(el("rect", { class: "wash", x, y, width: W, height: H, rx: 12 }, g), { fill: col });
+    sty(el("circle", { cx: x + 19, cy: y + 21, r: 12.5 }, g), { fill: col });
+    const nt = el("text", { x: x + 19, y: y + 26, "text-anchor": "middle", "font-size": 13.5, "font-weight": 800 }, g); nt.textContent = i + 1; sty(nt, { fill: "var(--num)" });
+    const nm = el("text", { x: x + 39, y: y + 25, "font-size": 10.5, "font-family": "ui-monospace, Menlo, Consolas, monospace", "font-weight": 600 }, g); sty(nm, { fill: s.stale ? "var(--k-data)" : col });
+    const full = (s.stale ? "⚠ " : "") + (s.name || (KIND[s.kind] || KIND.code).name); nm.textContent = full.length > 29 ? full.slice(0, 28) + "…" : full;
+    const tl = wrap(s.t, 26, 2);
+    tl.forEach((ln, j) => { const t = el("text", { x: x + 14, y: y + 56 + j * 17, "font-size": 14.5, "font-weight": 700 }, g); t.textContent = ln; sty(t, { fill: "var(--title)" }); });
+    wrap(s.d || "", 37, 3).forEach((ln, j) => { const t = el("text", { x: x + 14, y: y + 56 + tl.length * 17 + 4 + j * 13.6, "font-size": 11 }, g); t.textContent = ln; sty(t, { fill: "var(--desc)" }); });
+    g.addEventListener("click", () => { selectLane(null); jump(i); });
+    return g;
+  });
+  svg.appendChild(haloEl); svg.appendChild(dotEl);   // the dot rides above the nodes
+}
+
+function fileRow(box, ref) {
+  const r = document.createElement("div"); r.className = "fr" + (ref.ok === false ? " bad" : "");
+  const a = document.createElement("code"); a.className = "ff"; a.textContent = ref.file;
+  const b = document.createElement("span"); b.className = "fn"; b.textContent = ref.fn; if (ref.ok === false) b.dataset.missing = (ref.missing || []).join(", ");
+  r.append(a, b); box.appendChild(r);
+}
+const refsOf = (s) => s.refs || (s.files || []).map(([file, fn]) => ({ file, fn, ok: true }));
+
+function selectLane(l) { laneSel = l; paint(); }
+function jump(i) { step = i; pos = arr[i]; dwell = 0; paint(); }
+
+function paint() {
+  if (!cur) return;
+  const flow = cur;
+  document.documentElement.style.setProperty("--c", curColor);
+  trailEl.setAttribute("stroke-dasharray", `${pos} ${total + 50}`);
+  const p = pathEl.getPointAtLength(Math.min(pos, total));
+  dotEl.setAttribute("cx", p.x); dotEl.setAttribute("cy", p.y); haloEl.setAttribute("cx", p.x); haloEl.setAttribute("cy", p.y);
+  if (playing && !laneSel) { const st = $("stage"), k = svg.clientWidth / vw, want = p.y * k - st.clientHeight * 0.45; st.scrollTop += (want - st.scrollTop) * 0.12; }
+  nodeEls.forEach((g, i) => {
+    const reached = pos >= arr[i] - 0.5, inLane = !laneSel || laneOf(flow, i) === laneSel;
+    g.classList.toggle("reached", reached); g.classList.toggle("active", i === step && reached); g.classList.toggle("dim", !inLane);
+  });
+  for (const l in laneEls) { laneEls[l].classList.toggle("on", laneSel === l); laneEls[l].classList.toggle("off", !!laneSel && laneSel !== l); }
+  const info = $("info");
+  if (laneSel) {
+    const items = flow.steps.map((s, i) => [s, i]).filter(([s, i]) => laneOf(flow, i) === laneSel);
+    info.innerHTML = `<div class="k" style="color:${LANE[laneSel].c}"></div><div class="lanelist"></div>`;
+    info.querySelector(".k").textContent = `Section · ${laneName(flow, laneSel)} · ${items.length} of ${flow.steps.length} steps`;
+    const box = info.querySelector(".lanelist");
+    items.forEach(([s, i]) => {
+      const row = document.createElement("div"); row.className = "lrow";
+      const h = document.createElement("div"); h.className = "lh"; h.textContent = (i + 1) + " · " + s.t; h.style.color = (KIND[s.kind] || KIND.code).c; row.appendChild(h);
+      refsOf(s).forEach((r) => fileRow(row, r));
+      row.onclick = () => { selectLane(null); jump(i); };
+      box.appendChild(row);
+    });
+    return;
+  }
+  const s = flow.steps[step], kc = (KIND[s.kind] || KIND.code).c;
+  info.innerHTML = `<div class="cols"><div><div class="k"></div><h3></h3><p></p></div><div class="files"><div class="k" style="color:#7d8bb0">Which file · which function</div></div></div>`;
+  const k = info.querySelector(".k"); k.style.color = kc; k.textContent = `Step ${step + 1} of ${flow.steps.length} · ${laneName(flow, laneOf(flow, step))}`;
+  info.querySelector("h3").textContent = s.t;
+  info.querySelector("p").textContent = s.detail || s.d || "";
+  const fb = info.querySelector(".files"); refsOf(s).forEach((r) => fileRow(fb, r));
+}
+
+let ticking = false;
+function kick() { if (!ticking) { ticking = true; last = performance.now(); requestAnimationFrame(tick); } }
+function tick(ts) {
+  const dt = Math.min(60, ts - last) / 1000; last = ts;
+  if (!(playing && cur)) { ticking = false; return; }
+  if (playing && cur) {
+    const sp = +$("speed").value * (pos < arr[step] + H ? 3 : 1);   // quick through a node, normal between
+    if (dwell > 0) dwell -= dt * 1000 * sp;
+    else if (step < cur.steps.length - 1) { pos += 330 * sp * dt; if (pos >= arr[step + 1]) { pos = arr[step + 1]; step++; dwell = 1500; } }
+    else { playing = false; $("play").textContent = "▶ Play again"; }
+    paint();
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- overview (entry points + outer pages) ---------- */
+function tags(parent, list, cls, onclick) { if (!list.length) { const n = document.createElement("span"); n.className = "none"; n.textContent = "—"; parent.appendChild(n); return; } list.forEach((t) => { const x = document.createElement("span"); x.className = "tag " + cls; x.textContent = t.label || t; if (onclick) x.onclick = (e) => { e.stopPropagation(); onclick(t); }; parent.appendChild(x); }); }
+const OV = { data: null, q: "", kinds: new Set(["page", "api", "middleware"]), onlyData: false, onlyActions: false, group: "route", closed: new Set(), init: false };
+function ovCards() { return OV.data.groups.flatMap((g) => g.cards.map((c) => Object.assign({ _g: g.name }, c))); }
+function ovMatch(c) {
+  if (!OV.kinds.has(c.kind)) return false;
+  const hasData = c.data.packages.length || c.data.tables.length || c.data.rpcs.length;
+  if (OV.onlyData && !hasData) return false;
+  if (OV.onlyActions && !c.actions.length) return false;
+  if (OV.q) { const t = (c.title + " " + c.file + " " + c.ui.join(" ") + " " + c.actions.join(" ") + " " + c.api.join(" ") + " " + c.data.packages.join(" ") + " " + c.data.tables.join(" ") + " " + c.data.rpcs.join(" ")).toLowerCase(); if (!t.includes(OV.q)) return false; }
+  return true;
+}
+function ovGroups(cards) {
+  const m = new Map(), add = (k, c) => { if (!m.has(k)) m.set(k, []); m.get(k).push(c); };
+  for (const c of cards) {
+    if (OV.group === "route") add(c._g, c);
+    else if (OV.group === "kind") add(c.kind === "page" ? "Pages" : c.kind === "api" ? "API routes" : "Middleware / proxy", c);
+    else if (OV.group === "data") add(c.data.packages[0] || (c.data.tables.length ? "tables only" : "no data store reached"), c);
+    else add((c.ui[0] || "no UI parts").replace(/ ×\d+$/, ""), c);
+  }
+  return [...m.entries()];
+}
+function renderOv() {
+  const o = OV.data, box = $("ov"); box.innerHTML = "";
+  const all = ovCards(), cards = all.filter(ovMatch), groups = ovGroups(cards);
+  if (!OV.init) { OV.init = true; if (all.length > 30) groups.forEach(([k]) => OV.closed.add(OV.group + "|" + k)); }
+  // entry chain
+  const ec = document.createElement("div"); ec.className = "entrycard";
+  ec.innerHTML = "<h4></h4><p></p>"; ec.querySelector("h4").textContent = "◎  App entry chain  →";
+  ec.querySelector("p").textContent = "From the entry: root layout and providers → every page (grouped, foldable) → API routes → middleware → server actions. Open it as one foldable tree and follow a request down and the answer back up.";
+  ec.onclick = () => NodeChain.open("e:app"); box.appendChild(ec);
+  // toolbar
+  const tb = document.createElement("div"); tb.className = "ovtool";
+  const q = document.createElement("input"); q.type = "text"; q.placeholder = "Search pages, routes, UI parts, tables, files…"; q.value = OV.q; q.oninput = () => { OV.q = q.value.trim().toLowerCase(); const pos = q.selectionStart; renderOv(); const n = $("ov").querySelector(".ovtool input"); n.focus(); n.setSelectionRange(pos, pos); };
+  tb.appendChild(q);
+  [["page", "Pages"], ["api", "API"], ["middleware", "Middleware"]].forEach(([k, l]) => { const c = document.createElement("span"); c.className = "chip sw" + (OV.kinds.has(k) ? " on" : ""); c.textContent = l; c.onclick = () => { OV.kinds.has(k) ? OV.kinds.delete(k) : OV.kinds.add(k); renderOv(); }; tb.appendChild(c); });
+  [["onlyData", "has data"], ["onlyActions", "has server actions"]].forEach(([k, l]) => { const c = document.createElement("span"); c.className = "chip sw" + (OV[k] ? " on" : ""); c.textContent = l; c.onclick = () => { OV[k] = !OV[k]; renderOv(); }; tb.appendChild(c); });
+  const sel = document.createElement("select"); [["route", "group: by route"], ["kind", "group: by kind"], ["data", "group: by data store"], ["ui", "group: by main UI part"]].forEach(([v, l]) => { const op = document.createElement("option"); op.value = v; op.textContent = l; if (OV.group === v) op.selected = true; sel.appendChild(op); });
+  sel.onchange = () => { OV.group = sel.value; OV.closed = new Set(); OV.init = false; renderOv(); }; tb.appendChild(sel);
+  const bx = (l, f) => { const b = document.createElement("button"); b.textContent = l; b.onclick = f; tb.appendChild(b); };
+  bx("Expand all", () => { OV.closed = new Set(); renderOv(); }); bx("Collapse all", () => { groups.forEach(([k]) => OV.closed.add(OV.group + "|" + k)); renderOv(); });
+  const cnt = document.createElement("span"); cnt.className = "none"; cnt.textContent = cards.length + " of " + all.length + " shown"; tb.appendChild(cnt);
+  box.appendChild(tb);
+  groups.forEach(([name, list]) => {
+    const key = OV.group + "|" + name, closed = OV.closed.has(key) && !OV.q;
+    const h = document.createElement("div"); h.className = "ovg"; h.textContent = (closed ? "▸ " : "▾ ") + name + "  (" + list.length + ")";
+    h.onclick = () => { closed ? OV.closed.delete(key) : OV.closed.add(key); renderOv(); }; box.appendChild(h);
+    if (closed) return;
+    const grid = document.createElement("div"); grid.className = "ovgrid"; box.appendChild(grid);
+    list.forEach((c) => {
+      const d = document.createElement("div"); d.className = "ovc";
+      const lin = document.createElement("button"); lin.className = "ovbtn"; lin.textContent = "linear flow"; lin.onclick = (e) => { e.stopPropagation(); openCard(c, null); }; d.appendChild(lin);
+      const t = document.createElement("h4"); t.textContent = c.title; const f = document.createElement("div"); f.className = "fl"; f.textContent = c.file + " · " + c.files + " files reached"; d.append(t, f);
+      const row = (label, items, cls, cb) => { const r = document.createElement("div"); r.className = "ovr"; const b = document.createElement("b"); b.textContent = label; const w = document.createElement("div"); r.append(b, w); tags(w, items, cls, cb); d.appendChild(r); };
+      row("UI", c.ui, "ui"); row("actions", c.actions, "act"); row("API", c.api, "api");
+      const data = [...c.data.packages.map((p) => ({ label: p, pkg: p })), ...c.data.tables.map((x) => ({ label: "table " + x })), ...c.data.rpcs.map((x) => ({ label: x }))];
+      row("data", data, "db", (t2) => { if (t2.pkg) NodeChain.open(c.id, { search: t2.pkg }); });
+      d.onclick = () => NodeChain.open(c.id);
+      grid.appendChild(d);
+    });
+  });
+}
+async function showOverview() {
+  const o = await get("/api/overview");
+  if (o.error) { setTimeout(showOverview, 800); return; }
+  NodeChain.close();
+  OV.data = o; OV.init = OV.init && OV.data && true;
+  curId = "__overview"; cur = null; playing = false; laneSel = null;
+  document.body.classList.add("ovmode"); $("ov").style.display = "block"; svg.style.display = "none";
+  $("path").textContent = "Overview · from the entry points and the outer pages";
+  $("title").textContent = o.project.name;
+  $("subtitle").textContent = `${o.project.stats.files} files · ${o.project.stats.routes} routes · ${o.project.stats.functions} functions` + (o.project.engines ? " · node " + o.project.engines : "");
+  $("chips").innerHTML = "";
+  renderOv();
+  const info = $("info");
+  info.innerHTML = `<div class="cols"><div><div class="k" style="color:var(--dim)">Entry points</div><div class="entry"></div></div><div class="files"><div class="k" style="color:var(--dim)">Server actions ("use server")</div><div class="sa"></div></div></div>`;
+  const en = info.querySelector(".entry");
+  const line = (a2, b2) => { const r = document.createElement("div"); r.className = "fr"; const x = document.createElement("code"); x.className = "ff"; x.textContent = a2; const y = document.createElement("span"); y.className = "fn"; y.textContent = b2; r.append(x, y); en.appendChild(r); };
+  o.entry.scripts.slice(0, 6).forEach((sc) => line("npm run " + sc.name, sc.cmd));
+  if (o.entry.main) line("main", o.entry.main);
+  if (o.entry.bin) line("bin", typeof o.entry.bin === "string" ? o.entry.bin : Object.entries(o.entry.bin).map(([k, v]) => k + " → " + v).join(", "));
+  const sa = info.querySelector(".sa");
+  if (!o.entry.serverActionFiles.length) { const n = document.createElement("div"); n.className = "none"; n.textContent = "none found"; sa.appendChild(n); }
+  o.entry.serverActionFiles.forEach((f) => { const r = document.createElement("div"); r.className = "fr"; const x = document.createElement("code"); x.className = "ff"; x.textContent = f; r.appendChild(x); sa.appendChild(r); });
+  renderMenu(); location.hash = "overview";
+}
+function leaveOverview() { document.body.classList.remove("ovmode"); $("ov").style.display = "none"; svg.style.display = ""; if (window.NodeChain && NodeChain.active()) NodeChain.close(); }
+function openCard(c, pkg) { const cat = c.kind === "page" ? "Feature" : "Route"; pendingSink = pkg || null; select(c.id, cats.find((x) => x.name === cat), false); }
+
+/* ---------- loading ---------- */
+async function select(id, cat, keep) {
+  leaveOverview(); curId = id; if (!keep) { sink = pendingSink; pendingSink = null; }
+  const c = cat || cats.find((x) => x.items.some((i) => i.id === id)) || cats[0];
+  curCat = c.name; curColor = themed(c.name);
+  const flow = await get("/api/flow?id=" + encodeURIComponent(id) + (sink ? "&sink=" + encodeURIComponent(sink) : ""));
+  if (!flow || flow.error) { cur = null; $("title").textContent = "Not found"; $("subtitle").textContent = id; return; }
+  const keepStep = keep ? Math.min(step, flow.steps.length - 1) : 0;
+  cur = flow;
+  $("path").textContent = c.name + " › " + (flow.curated ? "curated" : "auto from code");
+  $("title").textContent = flow.title; $("subtitle").textContent = flow.sub || "";
+  const chips = $("chips"); chips.innerHTML = "";
+  if (flow.others && flow.others.length) {
+    const lab = document.createElement("span"); lab.textContent = "also reaches:"; chips.appendChild(lab);
+    flow.others.forEach((o) => { const b = document.createElement("span"); b.className = "chip"; b.textContent = "→ " + o; b.onclick = () => { pendingSink = o; select(id, c, false); }; chips.appendChild(b); });
+    if (sink) { const b = document.createElement("span"); b.className = "chip"; b.textContent = "↺ nearest"; b.onclick = () => { pendingSink = null; select(id, c, false); }; chips.appendChild(b); }
+  }
+  if (flow.auto) { const cb = document.createElement("span"); cb.className = "chip"; cb.textContent = "◫ Full chain (all paths, foldable)"; cb.onclick = () => NodeChain.open(id); chips.appendChild(cb); }
+  const stale = flow.steps.filter((s) => s.stale).length;
+  if (stale) { const w = document.createElement("span"); w.className = "stale"; w.textContent = `⚠ ${stale} step(s) point to code that no longer exists`; chips.appendChild(w); }
+  build(flow);
+  const used = [...new Set(flow.steps.map((s) => s.kind))];
+  $("legend").innerHTML = used.map((k) => `<span><i style="background:${(KIND[k] || KIND.code).c};color:${(KIND[k] || KIND.code).c}"></i>${(KIND[k] || KIND.code).name}</span>`).join("");
+  step = keepStep; pos = keep ? arr[keepStep] : 0; dwell = keep ? 0 : 600; playing = !keep || playing; laneSel = null;
+  $("play").textContent = playing ? "⏸ Pause" : "▶ Play";
+  renderMenu(); paint(); kick();
+  location.hash = encodeURIComponent(id);
+}
+
+async function loadModel(first) {
+  const m = await get("/api/model");
+  if (m.noProject) { $("proj").textContent = "No project"; $("meta").textContent = ""; setLive("err", "choose a Node project"); showLanding(); return; }
+  if (m.scanning && !m.categories) { $("proj").textContent = m.project ? m.project.name : "…"; setLive("busy", "scanning the project…"); setTimeout(() => loadModel(first), 700); return; }
+  model = m; cats = m.categories;
+  $("proj").textContent = m.project.name;
+  const s = m.project.stats, fw = Object.keys(m.project.framework || {}).join(" · ");
+  $("meta").textContent = `${s.files} files · ${s.routes} routes · ${s.functions} functions` + (fw ? " · " + fw : "");
+  setLive(m.error ? "err" : "", m.error ? m.error : "live · scanned " + new Date(m.project.scannedAt).toLocaleTimeString() + " (" + s.ms + " ms)");
+  if (first) {
+    const hash = decodeURIComponent(location.hash.slice(1));
+    const all = cats.flatMap((c) => c.items.map((i) => [i, c]));
+    const pick = all.find(([i]) => i.id === hash);
+    if (pick) { openCats[pick[1].name] = true; await select(pick[0].id, pick[1]); }
+    else await showOverview();
+    renderMenu();
+  } else { renderMenu(); if (curId === "__overview") await showOverview(); else if (curId === "__chain") toast("Project changed: press ⟳ Refresh to reload the chain"); else if (curId) await select(curId, null, true); }
+}
+function setLive(cls, text) { $("live").className = "live " + cls; $("livet").textContent = text; }
+
+const es = new EventSource("/events");
+es.onmessage = (e) => { const d = JSON.parse(e.data); if (d.type === "scanning") setLive("busy", "scanning…"); if (d.type === "scan" || d.type === "project") GC.clear(); if (d.type === "project") { resetForProject(); loadModel(true); return; } if (d.type === "scan") { loadModel(false).then(() => { if (d.changed && d.changed.length) toast("Updated: " + d.changed.slice(0, 2).join(", ") + (d.changed.length > 2 ? " +" + (d.changed.length - 2) : "")); }); } };
+es.onerror = () => setLive("err", "disconnected, retrying…");
+
+
+/* ---------- project picker + checker ---------- */
+let modalForce = false, chkTimer = null;
+const post = (u, b) => fetch(u, { method: "POST", headers: { "x-nodebox": "1", "content-type": "application/json" }, body: JSON.stringify(b || {}) }).then((r) => r.json());
+function renderChecks(r) {
+  const box = $("pchecks"); box.innerHTML = "";
+  (r.checks || []).forEach((c) => { const d = document.createElement("div"); d.className = "ck " + (c.ok ? "ok" : "no"); const b = document.createElement("b"); b.textContent = c.ok ? "✓" : "✗"; const w = document.createElement("div"); const sp = document.createElement("span"); sp.textContent = c.label; w.appendChild(sp); if (c.detail) { const sm = document.createElement("small"); sm.textContent = c.detail; w.appendChild(sm); } d.append(b, w); box.appendChild(d); });
+  if (r.ok && r.info) { const d = document.createElement("div"); d.className = "ck ok"; d.innerHTML = "<b>●</b>"; const w = document.createElement("div"); w.textContent = "Ready: " + r.info.name; d.appendChild(w); box.appendChild(d); }
+}
+async function runCheck() {
+  const dir = $("pdir").value.trim();
+  if (!dir) { $("pchecks").innerHTML = ""; $("popen").disabled = true; return; }
+  const r = await post("/api/project/check", { dir });
+  renderChecks(r); $("popen").disabled = !r.ok;
+}
+async function refreshRecent() {
+  const r = await get("/api/projects"), box = $("precent"); box.innerHTML = "";
+  if (!r.recent.length) return;
+  const h = document.createElement("div"); h.className = "hint"; h.style.margin = "0 0 4px"; h.textContent = "Recent projects"; box.appendChild(h);
+  r.recent.forEach((p) => {
+    const row = document.createElement("div"); row.className = "rc";
+    const st = document.createElement("span"); st.className = "st " + (p.ok ? "ok" : "no"); st.textContent = p.ok ? "✓" : "✗"; st.title = p.ok ? "Node project" : "No longer a Node project";
+    const t = document.createElement("div"); const nm = document.createElement("div"); nm.textContent = p.name + (p.dir === r.current ? "  (open now)" : ""); const cd = document.createElement("code"); cd.textContent = p.dir; t.append(nm, cd);
+    const x = document.createElement("span"); x.className = "x"; x.textContent = "✕"; x.title = "Forget"; x.onclick = async (e) => { e.stopPropagation(); await post("/api/project/forget", { dir: p.dir }); refreshRecent(); };
+    row.append(st, t, x); row.onclick = () => { $("pdir").value = p.dir; runCheck(); }; box.appendChild(row);
+  });
+}
+function openModal(force) { modalForce = !!force; $("modal").classList.add("on"); $("pcancel").style.display = force ? "none" : ""; $("pchecks").innerHTML = ""; $("popen").disabled = true; refreshRecent(); setTimeout(() => $("pdir").focus(), 50); }
+function closeModal() { if (modalForce) return; $("modal").classList.remove("on"); }
+$("proj").onclick = () => openModal(false);
+$("pcancel").onclick = closeModal;
+$("modal").onclick = (e) => { if (e.target === $("modal")) closeModal(); };
+$("pdir").oninput = () => { clearTimeout(chkTimer); chkTimer = setTimeout(runCheck, 250); };
+$("pdir").onkeydown = (e) => { if (e.key === "Enter" && !$("popen").disabled) $("popen").click(); if (e.key === "Escape") closeModal(); };
+$("pbrowse").onclick = async () => { const r = await post("/api/project/pick"); if (r.dir) { $("pdir").value = r.dir; runCheck(); } };
+$("popen").onclick = async () => {
+  $("popen").disabled = true;
+  const r = await post("/api/project/open", { dir: $("pdir").value.trim() });
+  if (r.ok) { modalForce = false; $("modal").classList.remove("on"); hideLanding(); toast("Opened " + r.info.name); } else { renderChecks(r); }
+};
+
+/* ---------- landing page: the history of opened projects ---------- */
+function ago(t) { const s = (Date.now() - t) / 1000; if (!t || s < 0) return ""; if (s < 90) return "just now"; if (s < 3600) return Math.round(s / 60) + " min ago"; if (s < 86400) return Math.round(s / 3600) + " h ago"; if (s < 86400 * 30) return Math.round(s / 86400) + " days ago"; return new Date(t).toLocaleDateString(); }
+async function showLanding() {
+  const r = await fetch("/api/projects").then((x) => x.json()), box = $("lcards"); box.innerHTML = "";
+  $("lhead").textContent = r.recent.length ? "Recent projects" : "Get started";
+  if (!r.recent.length) { const d = document.createElement("div"); d.className = "empty"; d.textContent = "No projects yet. Open a folder that has a package.json and it will be listed here next time."; box.appendChild(d); }
+  r.recent.forEach((p) => {
+    const c = document.createElement("div"); c.className = "card" + (p.ok ? "" : " off"); c.title = p.ok ? "Open " + p.name : "This folder is no longer a Node project";
+    const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = p.name;
+    if (p.dir === r.current) { const b = document.createElement("i"); b.textContent = "open now"; nm.appendChild(b); }
+    const cd = document.createElement("code"); cd.textContent = p.dir;
+    const wh = document.createElement("div"); wh.className = "when"; wh.textContent = p.ok ? "opened " + ago(p.at) : "✗ not a Node project any more";
+    const x = document.createElement("span"); x.className = "x"; x.textContent = "✕"; x.title = "Remove from history";
+    x.onclick = async (e) => { e.stopPropagation(); await post("/api/project/forget", { dir: p.dir }); showLanding(); };
+    c.append(nm, cd, wh, x);
+    c.onclick = async () => {
+      if (!p.ok) return;
+      if (p.dir === r.current) { hideLanding(); return; }
+      c.style.opacity = ".6"; const o = await post("/api/project/open", { dir: p.dir });
+      if (o.ok) { hideLanding(); toast("Opened " + o.info.name); } else { c.style.opacity = ""; toast("Could not open: " + ((o.checks || []).find((k) => !k.ok) || {}).label); }
+    };
+    box.appendChild(c);
+  });
+  $("lresume").style.display = r.current ? "" : "none";
+  $("landing").classList.add("on");
+}
+function hideLanding() { $("landing").classList.remove("on"); }
+$("lopen").onclick = () => openModal(false);
+$("lresume").onclick = hideLanding;
+$("home").onclick = showLanding;
+$("theme").onclick = () => applyTheme(theme === "dark" ? "light" : "dark", true);
+applyTheme(theme, false);
+function resetForProject() { cur = null; curId = null; cats = []; openCats = {}; openGroups = {}; svg.innerHTML = ""; $("title").textContent = ""; $("subtitle").textContent = ""; $("path").textContent = ""; $("chips").innerHTML = ""; $("info").innerHTML = ""; $("menu").innerHTML = ""; playing = false; location.hash = ""; }
+
+/* ---------- controls ---------- */
+$("q").oninput = renderMenu;
+$("play").onclick = () => { kick(); if (!cur) return; if (step >= cur.steps.length - 1 && pos >= total - 1) { step = 0; pos = 0; dwell = 400; } playing = !playing; $("play").textContent = playing ? "⏸ Pause" : "▶ Play"; };
+$("next").onclick = () => { if (!cur) return; playing = false; $("play").textContent = "▶ Play"; if (step < cur.steps.length - 1) jump(step + 1); };
+$("prev").onclick = () => { if (!cur) return; playing = false; $("play").textContent = "▶ Play"; if (step > 0) jump(step - 1); };
+$("restart").onclick = () => { kick(); step = 0; pos = 0; dwell = 600; playing = true; $("play").textContent = "⏸ Pause"; paint(); };
+$("zout").onclick = () => { zoom -= 0.1; applyZoom(); };
+$("zin").onclick = () => { zoom += 0.1; applyZoom(); };
+$("zfit").onclick = () => { zoom = ($("stage").clientWidth - 40) / vw; applyZoom(); };
+$("rescan").onclick = () => fetch("/api/rescan", { method: "POST" });
+function toggleSidebar(force) {
+  const hide = typeof force === "boolean" ? force : !$("app").classList.contains("sbhide");
+  $("app").classList.toggle("sbhide", hide); document.body.classList.toggle("sbhide-on", hide);
+  localStorage.setItem("nbSb", hide ? "1" : "0");
+}
+$("sbclose").onclick = () => toggleSidebar(true); $("sbopen").onclick = () => toggleSidebar(false);
+if (localStorage.getItem("nbSb") === "1") toggleSidebar(true);
+addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && (e.key === "b" || e.key === "B")) { e.preventDefault(); toggleSidebar(); return; }
+  if (e.target === $("q")) return;
+  if (e.key === "ArrowRight") $("next").click(); if (e.key === "ArrowLeft") $("prev").click();
+  if (e.key === " ") { e.preventDefault(); $("play").click(); }
+  if (e.key === "-") $("zout").click(); if (e.key === "+" || e.key === "=") $("zin").click();
+  if (e.key === "Escape") { if ($("landing").classList.contains("on") && !$("modal").classList.contains("on") && $("lresume").style.display !== "none") hideLanding(); else selectLane(null); }
+  if (e.key === "/") { e.preventDefault(); $("q").focus(); }
+});
+NodeChain.init();
+kick();
+loadModel(true);
+</script>
+</body>
+</html>
