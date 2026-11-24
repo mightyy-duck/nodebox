@@ -61,7 +61,14 @@
   .brand h1 button + button { margin-left: 0; }
   .brand .proj { margin-top: 6px; font-weight: 700; color: var(--strong); word-break: break-all; cursor: pointer; border: 1px solid var(--bd); border-radius: 8px; padding: 6px 10px; background: var(--field); }
   .brand .proj:hover { border-color: var(--c); }
-  .brand .proj::after { content: '  ▾'; color: var(--dim); font-weight: 400; }
+  .brand .proj::after { content: ''; display: inline-block; width: 14px; height: 14px; margin-left: 6px; vertical-align: -3px; background: var(--dim); -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center/contain no-repeat; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center/contain no-repeat; }
+  button { white-space: nowrap; }
+  svg.li { display: inline-block !important; margin: 0 5px 0 0; height: auto; max-width: none; flex: none; vertical-align: -2px; }
+  #sbopen svg.li, #home svg.li, #sbclose svg.li, #zout svg.li, #zin svg.li, #chzout svg.li, #chzin svg.li, .x svg.li, .st svg.li, .ck b svg.li { margin: 0; }
+  #next svg.li { margin: 0 0 0 5px; }
+  #carside li b svg.li { margin: 0 0 0 4px; }
+  i[data-i] { display: inline-flex; align-items: center; vertical-align: middle; font-style: normal; }
+  .li-warn { color: #ffc233; }
   .brand .meta { color: var(--dim); font-size: 12px; margin-top: 2px; }
   .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--dim); margin-top: 6px; }
   .live i { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; }
@@ -110,7 +117,7 @@
   .ff { display: block; color: var(--c); font: 600 12.5px ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
   .fn { color: var(--sub2); font-size: 13px; }
   .bad .ff { color: #ffc233; text-decoration: line-through; }
-  .bad .fn::after { content: "  ⚠ not found in the code any more: " attr(data-missing); color: #ffc233; }
+  .bad .fn::after { content: "  not found in the code any more: " attr(data-missing); color: #ffc233; }
   .lanelist { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 8px 22px; margin-top: 6px; }
   .lrow { padding: 6px 10px; border-radius: 8px; cursor: pointer; border: 1px solid var(--line); }
   .lrow:hover { border-color: var(--c); }
@@ -218,11 +225,11 @@
 </style>
 </head>
 <body>
-<button id="sbopen" title="Show the sidebar (Ctrl/Cmd+B)">☰</button>
+<button id="sbopen" title="Show the sidebar (Ctrl/Cmd+B)"><i data-i="panel-left" data-s="16"></i></button>
 <div id="app">
   <aside>
     <div class="brand">
-      <h1><img src="/icon.png" alt="">NodeBox <button id="theme" title="Dark / light theme">◐ Theme</button><button id="home" title="Start page: recent projects">⌂</button><button id="sbclose" title="Hide the sidebar (Ctrl/Cmd+B)">◀</button></h1>
+      <h1><img src="/icon.png" alt="">NodeBox <button id="theme" title="Dark / light theme"><i data-i="sun-moon" data-s="14"></i>Theme</button><button id="home" title="Start page: recent projects"><i data-i="house" data-s="14"></i></button><button id="sbclose" title="Hide the sidebar (Ctrl/Cmd+B)"><i data-i="panel-left-close" data-s="14"></i></button></h1>
       <div class="proj" id="proj" title="Choose another project">…</div>
       <div class="meta" id="meta"></div>
       <div class="live" id="live"><i></i><span id="livet">connecting…</span></div>
@@ -239,23 +246,23 @@
       <div class="chips" id="chips"></div>
     </header>
     <div class="bar">
-      <button id="play">⏸ Pause</button>
-      <button id="prev">◀ Step</button>
-      <button id="next">Step ▶</button>
-      <button id="restart">↺ Restart</button>
-      <button id="zout" title="Zoom out (-)">−</button><span id="zv" style="min-width:44px;text-align:center;color:#7d8bb0">85%</span><button id="zin" title="Zoom in (+)">＋</button><button id="zfit">Fit</button>
+      <button id="play"><i data-i="pause" data-s="14"></i>Pause</button>
+      <button id="prev"><i data-i="step-back" data-s="14"></i>Step</button>
+      <button id="next">Step<i data-i="step-forward" data-s="14"></i></button>
+      <button id="restart"><i data-i="rotate-ccw" data-s="14"></i>Restart</button>
+      <button id="zout" title="Zoom out (-)"><i data-i="minus" data-s="14"></i></button><span id="zv" style="min-width:44px;text-align:center;color:#7d8bb0">85%</span><button id="zin" title="Zoom in (+)"><i data-i="plus" data-s="14"></i></button><button id="zfit">Fit</button>
       <label>speed <input id="speed" type="range" min="0.5" max="2.5" step="0.1" value="1"></label>
-      <button id="rescan" title="Scan the project folder again">⟳ Rescan</button>
+      <button id="rescan" title="Scan the project folder again"><i data-i="refresh-cw" data-s="14"></i>Rescan</button>
       <div class="legend" id="legend"></div>
     </div>
     <div id="chainbar">
-      <button id="chback">◀ Overview</button>
+      <button id="chback"><i data-i="arrow-left" data-s="14"></i>Overview</button>
       <input id="chq" type="text" placeholder="search in this chain…" autocomplete="off">
       <span id="chlanes"><span class="chip on" data-l="you">people</span><span class="chip on" data-l="ui">UI</span><span class="chip on" data-l="srv">server</span><span class="chip on" data-l="db">data</span><span class="chip on" data-l="az">cloud</span></span>
-      <button id="chexp" title="Open one more level">＋ level</button><button id="chcol" title="Close one level">− level</button><button id="chall">Expand all</button><button id="chnone">Collapse all</button>
-      <button id="chrefresh" title="Reload this chain from the code (keeps the search, resets folding)">⟳ Refresh</button><button id="chdrive" title="Send cars from the start: they split at every crossroad, turn back at dead ends that return a value, and stop at a function that returns nothing">🚗 Drive</button><button id="chpause" title="Pause / resume the cars (Space)" style="display:none">⏸ Pause</button><button id="chfollow" title="Watch a request travel down and the answer come back (or double-click a box)">▶ Follow</button>
+      <button id="chexp" title="Open one more level"><i data-i="plus" data-s="14"></i>level</button><button id="chcol" title="Close one level"><i data-i="minus" data-s="14"></i>level</button><button id="chall">Expand all</button><button id="chnone">Collapse all</button>
+      <button id="chrefresh" title="Reload this chain from the code (keeps the search, resets folding)"><i data-i="refresh-cw" data-s="14"></i>Refresh</button><button id="chdrive" title="Send cars from the start: they split at every crossroad, turn back at dead ends that return a value, and stop at a function that returns nothing"><i data-i="car" data-s="14"></i>Drive</button><button id="chpause" title="Pause / resume the cars (Space)" style="display:none"><i data-i="pause" data-s="14"></i>Pause</button><button id="chfollow" title="Watch a request travel down and the answer come back (or double-click a box)"><i data-i="play" data-s="14"></i>Follow</button>
       <select id="chloop" title="What the cars do after one run"><option value="once">run once</option><option value="repeat">repeat</option><option value="traffic">traffic (waves overlap)</option></select><select id="cherr" title="Condition: do the functions succeed or fail?"><option value="ok">all succeed</option><option value="random">random errors</option><option value="force">every risky function fails</option></select><label class="cb"><input type="checkbox" id="chcam"> follow cars</label><label class="cb"><input type="checkbox" id="chcarinfo"> car details</label><label style="color:var(--dim);font-size:13px">speed <input id="chspeed" type="range" min="0.1" max="2.5" step="0.05" value="0.6"></label>
-      <button id="chzout" title="Zoom out (also Ctrl/Cmd + scroll or pinch)">−</button><span id="chzv" style="min-width:42px;text-align:center;color:var(--dim);font-size:12px">90%</span><button id="chzin">＋</button><button id="chfit" title="Fit all expanded nodes in the view">Fit all</button>
+      <button id="chzout" title="Zoom out (also Ctrl/Cmd + scroll or pinch)"><i data-i="minus" data-s="14"></i></button><span id="chzv" style="min-width:42px;text-align:center;color:var(--dim);font-size:12px">90%</span><button id="chzin"><i data-i="plus" data-s="14"></i></button><button id="chfit" title="Fit all expanded nodes in the view">Fit all</button>
       <span id="chphase"></span><span id="chcount"></span>
     </div>
     <div id="stagewrap"><div id="stage"><svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg><div id="ov" style="display:none"></div><div id="chainbox"><div id="chainsvg"></div></div><div id="empty" style="display:none"></div></div><canvas id="carcanvas"></canvas></div>
@@ -279,8 +286,10 @@
   <div class="acts"><button id="pcancel">Cancel</button><button id="popen" class="primary" disabled>Open project</button></div>
 </div></div>
 <div id="toast"></div>
+<script src="/icons.js"></script>
 <script src="/chain.js"></script>
 <script>
+LI.hydrate();
 /* ---------- constants ---------- */
 const KIND = {
   user:     { c: "var(--k-user)",     name: "You" },
@@ -337,7 +346,7 @@ const get = (u) => {
 function renderMenu() {
   const q = $("q").value.trim().toLowerCase(), menu = $("menu");
   menu.innerHTML = "";
-  const ov = document.createElement("div"); ov.className = "item" + (curId === "__overview" ? " on" : ""); ov.style.setProperty("--ic", "var(--c)"); ov.textContent = "◎  Project overview"; ov.onclick = () => showOverview(); menu.appendChild(ov);
+  const ov = document.createElement("div"); ov.className = "item" + (curId === "__overview" ? " on" : ""); ov.style.setProperty("--ic", "var(--c)"); LI.txt(ov, "{{circle-dot}} Project overview"); ov.onclick = () => showOverview(); menu.appendChild(ov);
   for (const c of cats) {
     const items = q ? c.items.filter((i) => (i.title + " " + i.sub + " " + i.group).toLowerCase().includes(q)) : c.items;
     if (q && !items.length) continue;
@@ -351,7 +360,7 @@ function renderMenu() {
     const addItem = (i) => {
       const d = document.createElement("div"); d.className = "item" + (i.id === curId ? " on" : ""); d.style.setProperty("--ic", themed(c.name));
       d.textContent = i.title;
-      if (i.stale) { const s = document.createElement("span"); s.className = "stale"; s.textContent = "⚠ " + i.stale; s.title = i.stale + " step(s) point to code that changed"; d.appendChild(s); }
+      if (i.stale) { const s = document.createElement("span"); s.className = "stale"; LI.txt(s, "{{triangle-alert}} " + i.stale); s.title = i.stale + " step(s) point to code that changed"; d.appendChild(s); }
       if (i.group !== "Curated" && i.sub) { const sm = document.createElement("small"); sm.textContent = i.sub; d.appendChild(sm); }
       d.onclick = () => select(i.id, c);
       menu.appendChild(d);
@@ -362,7 +371,7 @@ function renderMenu() {
     const one = groups.size === 1;
     for (const [g, list] of groups) {
       const key = c.name + "|" + g, gopen = one || g === "Curated" || openGroups[key] || list.some((i) => i.id === curId);
-      if (!one) { const gh = document.createElement("div"); gh.className = "grp"; gh.textContent = (gopen ? "▾ " : "▸ ") + g + "  (" + list.length + ")"; gh.onclick = () => { openGroups[key] = !gopen; renderMenu(); }; menu.appendChild(gh); }
+      if (!one) { const gh = document.createElement("div"); gh.className = "grp"; LI.txt(gh, (gopen ? "{{chevron-down}} " : "{{chevron-right}} ") + g + "  (" + list.length + ")"); gh.onclick = () => { openGroups[key] = !gopen; renderMenu(); }; menu.appendChild(gh); }
       if (gopen) list.forEach(addItem);
     }
   }
@@ -419,7 +428,7 @@ function build(flow) {
     sty(el("circle", { cx: x + 19, cy: y + 21, r: 12.5 }, g), { fill: col });
     const nt = el("text", { x: x + 19, y: y + 26, "text-anchor": "middle", "font-size": 13.5, "font-weight": 800 }, g); nt.textContent = i + 1; sty(nt, { fill: "var(--num)" });
     const nm = el("text", { x: x + 39, y: y + 25, "font-size": 10.5, "font-family": "ui-monospace, Menlo, Consolas, monospace", "font-weight": 600 }, g); sty(nm, { fill: s.stale ? "var(--k-data)" : col });
-    const full = (s.stale ? "⚠ " : "") + (s.name || (KIND[s.kind] || KIND.code).name); nm.textContent = full.length > 29 ? full.slice(0, 28) + "…" : full;
+    const base = s.name || (KIND[s.kind] || KIND.code).name; LI.txt(nm, (s.stale ? "{{triangle-alert}} " : "") + (base.length > 27 ? base.slice(0, 26) + "…" : base));
     const tl = wrap(s.t, 26, 2);
     tl.forEach((ln, j) => { const t = el("text", { x: x + 14, y: y + 56 + j * 17, "font-size": 14.5, "font-weight": 700 }, g); t.textContent = ln; sty(t, { fill: "var(--title)" }); });
     wrap(s.d || "", 37, 3).forEach((ln, j) => { const t = el("text", { x: x + 14, y: y + 56 + tl.length * 17 + 4 + j * 13.6, "font-size": 11 }, g); t.textContent = ln; sty(t, { fill: "var(--desc)" }); });
@@ -485,7 +494,7 @@ function tick(ts) {
     const sp = +$("speed").value * (pos < arr[step] + H ? 3 : 1);   // quick through a node, normal between
     if (dwell > 0) dwell -= dt * 1000 * sp;
     else if (step < cur.steps.length - 1) { pos += 330 * sp * dt; if (pos >= arr[step + 1]) { pos = arr[step + 1]; step++; dwell = 1500; } }
-    else { playing = false; $("play").textContent = "▶ Play again"; }
+    else { playing = false; LI.txt($("play"), "{{rotate-ccw}} Play again"); }
     paint();
   }
   requestAnimationFrame(tick);
@@ -519,7 +528,7 @@ function renderOv() {
   if (!OV.init) { OV.init = true; if (all.length > 30) groups.forEach(([k]) => OV.closed.add(OV.group + "|" + k)); }
   // entry chain
   const ec = document.createElement("div"); ec.className = "entrycard";
-  ec.innerHTML = "<h4></h4><p></p>"; ec.querySelector("h4").textContent = "◎  App entry chain  →";
+  ec.innerHTML = "<h4></h4><p></p>"; LI.txt(ec.querySelector("h4"), "{{circle-dot}} App entry chain {{arrow-right}}");
   ec.querySelector("p").textContent = "From the entry: root layout and providers → every page (grouped, foldable) → API routes → middleware → server actions. Open it as one foldable tree and follow a request down and the answer back up.";
   ec.onclick = () => NodeChain.open("e:app"); box.appendChild(ec);
   // toolbar
@@ -536,7 +545,7 @@ function renderOv() {
   box.appendChild(tb);
   groups.forEach(([name, list]) => {
     const key = OV.group + "|" + name, closed = OV.closed.has(key) && !OV.q;
-    const h = document.createElement("div"); h.className = "ovg"; h.textContent = (closed ? "▸ " : "▾ ") + name + "  (" + list.length + ")";
+    const h = document.createElement("div"); h.className = "ovg"; LI.txt(h, (closed ? "{{chevron-right}} " : "{{chevron-down}} ") + name + "  (" + list.length + ")");
     h.onclick = () => { closed ? OV.closed.delete(key) : OV.closed.add(key); renderOv(); }; box.appendChild(h);
     if (closed) return;
     const grid = document.createElement("div"); grid.className = "ovgrid"; box.appendChild(grid);
@@ -594,17 +603,17 @@ async function select(id, cat, keep) {
   const chips = $("chips"); chips.innerHTML = "";
   if (flow.others && flow.others.length) {
     const lab = document.createElement("span"); lab.textContent = "also reaches:"; chips.appendChild(lab);
-    flow.others.forEach((o) => { const b = document.createElement("span"); b.className = "chip"; b.textContent = "→ " + o; b.onclick = () => { pendingSink = o; select(id, c, false); }; chips.appendChild(b); });
-    if (sink) { const b = document.createElement("span"); b.className = "chip"; b.textContent = "↺ nearest"; b.onclick = () => { pendingSink = null; select(id, c, false); }; chips.appendChild(b); }
+    flow.others.forEach((o) => { const b = document.createElement("span"); b.className = "chip"; LI.txt(b, "{{arrow-right}} " + o); b.onclick = () => { pendingSink = o; select(id, c, false); }; chips.appendChild(b); });
+    if (sink) { const b = document.createElement("span"); b.className = "chip"; LI.txt(b, "{{undo-2}} nearest"); b.onclick = () => { pendingSink = null; select(id, c, false); }; chips.appendChild(b); }
   }
-  if (flow.auto) { const cb = document.createElement("span"); cb.className = "chip"; cb.textContent = "◫ Full chain (all paths, foldable)"; cb.onclick = () => NodeChain.open(id); chips.appendChild(cb); }
+  if (flow.auto) { const cb = document.createElement("span"); cb.className = "chip"; LI.txt(cb, "{{list-tree}} Full chain (all paths, foldable)"); cb.onclick = () => NodeChain.open(id); chips.appendChild(cb); }
   const stale = flow.steps.filter((s) => s.stale).length;
-  if (stale) { const w = document.createElement("span"); w.className = "stale"; w.textContent = `⚠ ${stale} step(s) point to code that no longer exists`; chips.appendChild(w); }
+  if (stale) { const w = document.createElement("span"); w.className = "stale"; LI.txt(w, `{{triangle-alert}} ${stale} step(s) point to code that no longer exists`); chips.appendChild(w); }
   build(flow);
   const used = [...new Set(flow.steps.map((s) => s.kind))];
   $("legend").innerHTML = used.map((k) => `<span><i style="background:${(KIND[k] || KIND.code).c};color:${(KIND[k] || KIND.code).c}"></i>${(KIND[k] || KIND.code).name}</span>`).join("");
   step = keepStep; pos = keep ? arr[keepStep] : 0; dwell = keep ? 0 : 600; playing = !keep || playing; laneSel = null;
-  $("play").textContent = playing ? "⏸ Pause" : "▶ Play";
+  LI.txt($("play"), playing ? "{{pause}} Pause" : "{{play}} Play");
   renderMenu(); paint(); kick();
   location.hash = encodeURIComponent(id);
 }
@@ -625,7 +634,7 @@ async function loadModel(first) {
     if (pick) { openCats[pick[1].name] = true; await select(pick[0].id, pick[1]); }
     else await showOverview();
     renderMenu();
-  } else { renderMenu(); if (curId === "__overview") await showOverview(); else if (curId === "__chain") toast("Project changed: press ⟳ Refresh to reload the chain"); else if (curId) await select(curId, null, true); }
+  } else { renderMenu(); if (curId === "__overview") await showOverview(); else if (curId === "__chain") toast("Project changed: press Refresh to reload the chain"); else if (curId) await select(curId, null, true); }
 }
 function setLive(cls, text) { $("live").className = "live " + cls; $("livet").textContent = text; }
 
@@ -639,8 +648,8 @@ let modalForce = false, chkTimer = null;
 const post = (u, b) => fetch(u, { method: "POST", headers: { "x-nodebox": "1", "content-type": "application/json" }, body: JSON.stringify(b || {}) }).then((r) => r.json());
 function renderChecks(r) {
   const box = $("pchecks"); box.innerHTML = "";
-  (r.checks || []).forEach((c) => { const d = document.createElement("div"); d.className = "ck " + (c.ok ? "ok" : "no"); const b = document.createElement("b"); b.textContent = c.ok ? "✓" : "✗"; const w = document.createElement("div"); const sp = document.createElement("span"); sp.textContent = c.label; w.appendChild(sp); if (c.detail) { const sm = document.createElement("small"); sm.textContent = c.detail; w.appendChild(sm); } d.append(b, w); box.appendChild(d); });
-  if (r.ok && r.info) { const d = document.createElement("div"); d.className = "ck ok"; d.innerHTML = "<b>●</b>"; const w = document.createElement("div"); w.textContent = "Ready: " + r.info.name; d.appendChild(w); box.appendChild(d); }
+  (r.checks || []).forEach((c) => { const d = document.createElement("div"); d.className = "ck " + (c.ok ? "ok" : "no"); const b = document.createElement("b"); LI.txt(b, c.ok ? "{{check}}" : "{{x}}", 15); const w = document.createElement("div"); const sp = document.createElement("span"); sp.textContent = c.label; w.appendChild(sp); if (c.detail) { const sm = document.createElement("small"); sm.textContent = c.detail; w.appendChild(sm); } d.append(b, w); box.appendChild(d); });
+  if (r.ok && r.info) { const d = document.createElement("div"); d.className = "ck ok"; d.innerHTML = "<b>" + LI.svg("circle-check", 15) + "</b>"; const w = document.createElement("div"); w.textContent = "Ready: " + r.info.name; d.appendChild(w); box.appendChild(d); }
 }
 async function runCheck() {
   const dir = $("pdir").value.trim();
@@ -654,9 +663,9 @@ async function refreshRecent() {
   const h = document.createElement("div"); h.className = "hint"; h.style.margin = "0 0 4px"; h.textContent = "Recent projects"; box.appendChild(h);
   r.recent.forEach((p) => {
     const row = document.createElement("div"); row.className = "rc";
-    const st = document.createElement("span"); st.className = "st " + (p.ok ? "ok" : "no"); st.textContent = p.ok ? "✓" : "✗"; st.title = p.ok ? "Node project" : "No longer a Node project";
+    const st = document.createElement("span"); st.className = "st " + (p.ok ? "ok" : "no"); LI.txt(st, p.ok ? "{{check}}" : "{{x}}", 13); st.title = p.ok ? "Node project" : "No longer a Node project";
     const t = document.createElement("div"); const nm = document.createElement("div"); nm.textContent = p.name + (p.dir === r.current ? "  (open now)" : ""); const cd = document.createElement("code"); cd.textContent = p.dir; t.append(nm, cd);
-    const x = document.createElement("span"); x.className = "x"; x.textContent = "✕"; x.title = "Forget"; x.onclick = async (e) => { e.stopPropagation(); await post("/api/project/forget", { dir: p.dir }); refreshRecent(); };
+    const x = document.createElement("span"); x.className = "x"; LI.txt(x, "{{x}}", 13); x.title = "Forget"; x.onclick = async (e) => { e.stopPropagation(); await post("/api/project/forget", { dir: p.dir }); refreshRecent(); };
     row.append(st, t, x); row.onclick = () => { $("pdir").value = p.dir; runCheck(); }; box.appendChild(row);
   });
 }
@@ -685,8 +694,8 @@ async function showLanding() {
     const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = p.name;
     if (p.dir === r.current) { const b = document.createElement("i"); b.textContent = "open now"; nm.appendChild(b); }
     const cd = document.createElement("code"); cd.textContent = p.dir;
-    const wh = document.createElement("div"); wh.className = "when"; wh.textContent = p.ok ? "opened " + ago(p.at) : "✗ not a Node project any more";
-    const x = document.createElement("span"); x.className = "x"; x.textContent = "✕"; x.title = "Remove from history";
+    const wh = document.createElement("div"); wh.className = "when"; LI.txt(wh, p.ok ? "opened " + ago(p.at) : "{{x}} not a Node project any more");
+    const x = document.createElement("span"); x.className = "x"; LI.txt(x, "{{x}}", 13); x.title = "Remove from history";
     x.onclick = async (e) => { e.stopPropagation(); await post("/api/project/forget", { dir: p.dir }); showLanding(); };
     c.append(nm, cd, wh, x);
     c.onclick = async () => {
@@ -710,10 +719,10 @@ function resetForProject() { cur = null; curId = null; cats = []; openCats = {};
 
 /* ---------- controls ---------- */
 $("q").oninput = renderMenu;
-$("play").onclick = () => { kick(); if (!cur) return; if (step >= cur.steps.length - 1 && pos >= total - 1) { step = 0; pos = 0; dwell = 400; } playing = !playing; $("play").textContent = playing ? "⏸ Pause" : "▶ Play"; };
-$("next").onclick = () => { if (!cur) return; playing = false; $("play").textContent = "▶ Play"; if (step < cur.steps.length - 1) jump(step + 1); };
-$("prev").onclick = () => { if (!cur) return; playing = false; $("play").textContent = "▶ Play"; if (step > 0) jump(step - 1); };
-$("restart").onclick = () => { kick(); step = 0; pos = 0; dwell = 600; playing = true; $("play").textContent = "⏸ Pause"; paint(); };
+$("play").onclick = () => { kick(); if (!cur) return; if (step >= cur.steps.length - 1 && pos >= total - 1) { step = 0; pos = 0; dwell = 400; } playing = !playing; LI.txt($("play"), playing ? "{{pause}} Pause" : "{{play}} Play"); };
+$("next").onclick = () => { if (!cur) return; playing = false; LI.txt($("play"), "{{play}} Play"); if (step < cur.steps.length - 1) jump(step + 1); };
+$("prev").onclick = () => { if (!cur) return; playing = false; LI.txt($("play"), "{{play}} Play"); if (step > 0) jump(step - 1); };
+$("restart").onclick = () => { kick(); step = 0; pos = 0; dwell = 600; playing = true; LI.txt($("play"), "{{pause}} Pause"); paint(); };
 $("zout").onclick = () => { zoom -= 0.1; applyZoom(); };
 $("zin").onclick = () => { zoom += 0.1; applyZoom(); };
 $("zfit").onclick = () => { zoom = ($("stage").clientWidth - 40) / vw; applyZoom(); };

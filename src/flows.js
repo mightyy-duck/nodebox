@@ -189,7 +189,7 @@ class Flows {
       const sc2 = Object.entries(m.entry.scripts || {}).map(([k, v]) => 'npm run ' + k + '  →  ' + v);
       if (sc2.length) kids.push(mk({ label: 'Scripts', kind: 'info', lane: 'you', file: 'package.json', etype: 'child', doc: sc2.join('\n'), children: [] }));
       const root = mk({ label: m.name, kind: 'entry', lane: 'you', file: 'package.json', etype: 'child', doc: (m.engines ? 'node ' + m.engines + ' · ' : '') + Object.keys(m.framework).join(', '), children: kids });
-      return { rootId: root, nodes, title: m.name + ' · entry', sub: 'Root layout, every page, API route, middleware and server action. Click ▸ to open a node.' };
+      return { rootId: root, nodes, title: m.name + ' · entry', sub: 'Root layout, every page, API route, middleware and server action. Click the chevron on a node to open a node.' };
     }
 
     // one page: its layouts (outer to inner) around the page, each with what it uses

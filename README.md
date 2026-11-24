@@ -110,3 +110,7 @@ An `.msi` has to be built on Windows (the WiX tool it needs does not run on macO
   download the `NodeBox-msi` artifact.
 
 The installer is per-user (no admin rights), adds a Start-menu and desktop shortcut, and is not code-signed, so Windows SmartScreen will warn until it is signed.
+
+## Icons
+
+The buttons, legends and car labels use [Lucide](https://lucide.dev) icons (ISC license), embedded in `web/icons.js`. Regenerate it with `scripts/gen-icons.py`.

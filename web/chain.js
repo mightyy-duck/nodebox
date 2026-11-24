@@ -122,14 +122,14 @@
         const open = inSearch ? true : CH.open.has(r.id);
         const cg = el("g", { class: "chev" }, g);
         sty(el("rect", { x: p.x + NW - 46, y: p.y + 10, width: 38, height: 28, rx: 8 }, cg), { fill: "var(--hover)", stroke: "var(--bd)" });
-        const ct = el("text", { x: p.x + NW - 27, y: p.y + 29, "text-anchor": "middle", "font-size": 11, "font-weight": 700 }, cg); ct.textContent = (open ? "▾ " : "▸ ") + (kids || "…"); sty(ct, { fill: "var(--sub2)" });
+        LI.g(cg, open ? "chevron-down" : "chevron-right", p.x + NW - 43, p.y + 18, 12, "var(--sub2)"); const ct = el("text", { x: p.x + NW - 13, y: p.y + 29, "text-anchor": "end", "font-size": 11, "font-weight": 700 }, cg); ct.textContent = String(kids || "…"); sty(ct, { fill: "var(--sub2)" });
         cg.addEventListener("click", (e) => { e.stopPropagation(); if (inSearch) { toast("Clear the search to fold or unfold"); return; } toggle(r.id); });
       }
-      const bd = el("text", { x: p.x + 10, y: p.y - 4, "font-size": 10, "font-weight": 700, class: "cbadge" }, g); bd.textContent = "";
-      const vm = el("text", { x: p.x + NW - 8, y: p.y + NH + 11, "font-size": 10, "font-weight": 700, "text-anchor": "end", class: "vmark", style: "display:none" }, g); vm.textContent = "✕ returns nothing: the cars stop here";
+      const bi = LI.g(g, "car", p.x + 10, p.y - 15, 12, "var(--dot)"); bi.style.display = "none"; const bd = el("text", { x: p.x + 26, y: p.y - 4, "font-size": 10, "font-weight": 700, class: "cbadge" }, g); bd.textContent = "";
+      const vm = el("g", { class: "vmark", style: "display:none" }, g); LI.g(vm, "circle-slash", p.x + 10, p.y + NH + 2, 11, "var(--k-security)"); const vt = el("text", { x: p.x + 26, y: p.y + NH + 11, "font-size": 10, "font-weight": 700 }, vm); vt.textContent = "returns nothing: the cars stop here";
       g.addEventListener("click", () => select(r.id));
       g.addEventListener("dblclick", () => follow(r.id));
-      CH.els[r.id] = g; g._bd = bd; g._vm = vm;
+      CH.els[r.id] = g; g._bd = bd; g._bi = bi; g._vm = vm;
     });
     CH.dotH = sty(el("circle", { r: 15, class: "halo", style: "display:none" }, csvg), { fill: "var(--dot)" });
     CH.dot = sty(el("circle", { r: 8, "stroke-width": 2.5, style: "display:none" }, csvg), { fill: "var(--dot)", stroke: "var(--node-under)" });
@@ -191,10 +191,10 @@
     CH.trailF.setAttribute("d", d); CH.trailR.setAttribute("d", rev);
     CH.anim = { path, pts, cum, arr, total: cum[cum.length - 1], pos: 0, dir: 1, dwell: 500, pathEl: CH.trailF };
     CH.dot.style.display = ""; CH.dotH.style.display = ""; CH.trailF.style.display = "";
-    $("chfollow").textContent = "■ Stop";
+    LI.txt($("chfollow"), "{{square}} Stop");
     if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
   }
-  function stopFollow() { CH.anim = null; if (CH.dot) { CH.dot.style.display = "none"; CH.dotH.style.display = "none"; CH.trailF.style.display = "none"; CH.trailR.style.display = "none"; } Object.values(CH.els || {}).forEach((g) => g.classList.remove("act")); $("chfollow").textContent = "▶ Follow"; }
+  function stopFollow() { CH.anim = null; if (CH.dot) { CH.dot.style.display = "none"; CH.dotH.style.display = "none"; CH.trailF.style.display = "none"; CH.trailR.style.display = "none"; } Object.values(CH.els || {}).forEach((g) => g.classList.remove("act")); LI.txt($("chfollow"), "{{play}} Follow"); }
   function tick(ts) {
     raf = 0; const a = CH.anim; if (!a || !CH.dot) return;
     const dt = Math.min(60, ts - last) / 1000; last = ts;
@@ -297,14 +297,14 @@
 
   /* ---------- what a car carries, where it is from and where it goes ---------- */
   const short = (t, n) => { t = String(t || ""); return t.length > n ? t.slice(0, n - 1) + "…" : t; };
-  const KE = { element: "🧩", object: "{}", array: "[ ]", string: "🔤", number: "🔢", boolean: "⚖️", response: "📨", null: "∅", value: "📦" };
+  const KE = { element: "{{puzzle}}", object: "{{braces}}", array: "{{brackets}}", string: "{{type}}", number: "{{binary}}", boolean: "{{toggle-left}}", response: "{{mail}}", null: "{{circle-slash}}", value: "{{package}}" };
   const KW = { element: "an element / HTML", object: "an object { }", array: "an array [ ]", string: "a string", number: "a number", boolean: "true / false", response: "an HTTP response", null: "null (nothing)", value: "a value" };
   function emojiOf(l) {                                  // the kind of data a car carries, as an icon
     const f = CH.nodes[l.a], t = CH.nodes[l.b];
-    if (l.type === "down") return t.etype === "fetch" ? "🌐" : t.pkg ? (t.lane === "db" ? "🗄️" : "☁️") : t.params ? "📥" : "∅";
-    if (l.err) return "💥"; if (l.empty) return "∅";
-    if (f.pkg) return f.lane === "db" ? "🗄️" : "☁️";
-    const ks = (f.kinds || []).map((k) => KE[k] || "📦"); return ks.length ? [...new Set(ks)].join(" ") : "📦";
+    if (l.type === "down") return t.etype === "fetch" ? "{{globe}}" : t.pkg ? (t.lane === "db" ? "{{database}}" : "{{cloud}}") : t.params ? "{{import}}" : "{{circle-slash}}";
+    if (l.err) return "{{circle-x}}"; if (l.empty) return "{{circle-slash}}";
+    if (f.pkg) return f.lane === "db" ? "{{database}}" : "{{cloud}}";
+    const ks = (f.kinds || []).map((k) => KE[k] || "{{package}}"); return ks.length ? [...new Set(ks)].join(" ") : "{{package}}";
   }
   function carryOf(l) {
     const from = CH.nodes[l.a], to = CH.nodes[l.b];
@@ -313,20 +313,20 @@
       const args = callee.pkg ? "arguments of the call" : callee.params === null || callee.params === undefined ? "the value it reads" : callee.params ? "arguments (" + callee.params + ")" : "no arguments";
       return { dir: "request, going down", how, carry: args, from, to };
     }
-    if (l.err) { const why = from.throws ? "throws an error" : from.errRet ? "returns an error (" + (from.retExpr || "") + ")" : "fails"; return { dir: "error, coming back up 💥", how: l.caught ? "caught by try/catch in " + (to.label || "the caller") + ": it carries on" : "not caught: the error keeps going up", carry: (from.label || "this function") + " " + why, from, to }; }
+    if (l.err) { const why = from.throws ? "throws an error" : from.errRet ? "returns an error (" + (from.retExpr || "") + ")" : "fails"; return { dir: "error, coming back up {{circle-x}}", how: l.caught ? "caught by try/catch in " + (to.label || "the caller") + ": it carries on" : "not caught: the error keeps going up", carry: (from.label || "this function") + " " + why, from, to }; }
     if (from.ret === false || (!from.ret && !from.pkg)) return { dir: "control returning, no value", how: "return (nothing)", carry: "nothing: " + (from.label || "this function") + " returns no value, control just goes back to the caller", from, to };
     const kk = (from.kinds || []).filter((k) => k !== "null" || from.kinds.length === 1).map((k) => (KE[k] || "") + " " + (KW[k] || k)).join(", ");
     const ret = from.pkg ? "the answer of the package call" : from.retExpr ? (kk ? kk + "   · " : "") + "returns " + from.retExpr + (from.retType ? "   : " + from.retType : "") : from.retType ? "returns a value of type " + from.retType : "returns a value";
-    return { dir: "answer, coming back up ✓", how: "return value", carry: ret, from, to };
+    return { dir: "answer, coming back up {{check}}", how: "return value", carry: ret, from, to };
   }
   // a selected car keeps its identity through its journey: it continues down (first road at a crossroad), turns back at a dead end, waits for its siblings, and stops where nothing is returned
   function nextLeg(l) { return D.legs[l.i + 1] || null; }
   function endReason(l) {
     const at = CH.nodes[l.b]; if (!at) return "the car finished";
-    if (l.type === "down") return (at.label || "this function") + " returns nothing: the car stopped there (✕)";
-    return l.b === CH.rootId ? "the answer reached the start: " + (at.label || "") : (at.label || "this function") + " returns nothing: the answer stopped there (✕)";
+    if (l.type === "down") return (at.label || "this function") + " returns nothing: the car stopped there {{circle-slash}}";
+    return l.b === CH.rootId ? "the answer reached the start: " + (at.label || "") : (at.label || "this function") + " returns nothing: the answer stopped there {{circle-slash}}";
   }
-  function carMsg(t) { const k = $("drvcar"); if (k && k.dataset.m !== t) { k.dataset.m = t; k.innerHTML = ""; const d = document.createElement("div"); d.className = "fn"; d.textContent = t; k.appendChild(d); } }
+  function carMsg(t) { const k = $("drvcar"); if (k && k.dataset.m !== t) { k.dataset.m = t; k.innerHTML = ""; const d = document.createElement("div"); d.className = "fn"; LI.txt(d, t); k.appendChild(d); } }
   function carPanel(leg, pt, T) {
     if (!D.sel) return;
     if (!leg) return;
@@ -335,7 +335,7 @@
     const x = carryOf(leg), box = $("drvcar"); if (!box) return;
     const fl = x.from.pkg ? x.from.file : (x.from.file || "") + (x.from.line ? ":" + x.from.line : ""), tl = x.to.pkg ? x.to.file : (x.to.file || "") + (x.to.line ? ":" + x.to.line : "");
     box.innerHTML = "";
-    const row = (k, v, code) => { const r = document.createElement("div"); r.className = "fr"; const a = document.createElement("span"); a.className = "k"; a.style.cssText = "display:inline-block;min-width:74px;color:var(--dim)"; a.textContent = k; const b = document.createElement(code ? "code" : "span"); b.className = code ? "ff" : "fn"; b.style.display = "inline"; b.textContent = v; r.append(a, b); box.appendChild(r); };
+    const row = (k, v, code) => { const r = document.createElement("div"); r.className = "fr"; const a = document.createElement("span"); a.className = "k"; a.style.cssText = "display:inline-block;min-width:74px;color:var(--dim)"; a.textContent = k; const b = document.createElement(code ? "code" : "span"); b.className = code ? "ff" : "fn"; b.style.display = "inline"; LI.txt(b, v, 13); r.append(a, b); box.appendChild(r); };
     row("car", x.dir); row("from", (x.from.label || "") + "   " + fl, true); row("going to", (x.to.label || "") + "   " + tl, true); row("how", x.how); row("carrying", x.carry);
   }
 
@@ -354,17 +354,17 @@
     <ul>
       <li class="sw amber"><b>Amber</b>: a request going down</li>
       <li class="sw green"><b>Green</b>: success, an answer with a value</li>
-      <li class="sw red"><b>Red 💥</b>: an error; it keeps going up until a function with try/catch handles it</li>
+      <li class="sw red"><b>Red {{circle-x}}</b>: an error; it keeps going up until a function with try/catch handles it</li>
       <li class="sw ring"><b>Dashed ring</b>: the function returns nothing</li>
     </ul>
     <h4>Icons (car details)</h4>
     <div class="icons">
-      <span><i>🧩</i>element / HTML</span><span><i>{}</i>object</span>
-      <span><i>[ ]</i>array</span><span><i>🔤</i>string</span>
-      <span><i>🔢</i>number</span><span><i>⚖️</i>true / false</span>
-      <span><i>📨</i>response</span><span><i>🌐</i>HTTP request</span>
-      <span><i>🗄️</i>database</span><span><i>☁️</i>cloud</span>
-      <span><i>📥</i>arguments</span><span><i>∅</i>nothing</span>
+      <span><i>{{puzzle}}</i>element / HTML</span><span><i>{{braces}}</i>object</span>
+      <span><i>{{brackets}}</i>array</span><span><i>{{type}}</i>string</span>
+      <span><i>{{binary}}</i>number</span><span><i>{{toggle-left}}</i>true / false</span>
+      <span><i>{{mail}}</i>response</span><span><i>{{globe}}</i>HTTP request</span>
+      <span><i>{{database}}</i>database</span><span><i>{{cloud}}</i>cloud</span>
+      <span><i>{{import}}</i>arguments</span><span><i>{{circle-slash}}</i>nothing</span>
     </div>
     <h4>Controls</h4>
     <ul>
@@ -376,7 +376,7 @@
     </ul>
 `;
   function resetDriveState() {
-    Object.values(CH.els).forEach((g) => { g.classList.add("dd"); g.classList.remove("act"); if (g._vm) g._vm.style.display = "none"; if (g._bd) g._bd.textContent = ""; });
+    Object.values(CH.els).forEach((g) => { g.classList.add("dd"); g.classList.remove("act"); if (g._vm) g._vm.style.display = "none"; if (g._bd) g._bd.textContent = ""; if (g._bi) g._bi.style.display = "none"; });
     D.pi = 0; D.vi = 0; D.voided = new Set(); D.actSet = new Set(); D.insideLast = {}; D.cars = [];
     const root = CH.els[repOf(CH.rootId)]; if (root) root.classList.remove("dd");
   }
@@ -406,9 +406,9 @@
       ctx.lineWidth = sel ? 3 : 2; ctx.strokeStyle = sel ? D.col.text : D.col.edge; ctx.stroke();
       if (sel || (showAll && labels < 22)) {
         labels++;
-        const t = emojiOf(c.leg);
-        ctx.font = "15px -apple-system, 'Apple Color Emoji', Helvetica, sans-serif"; ctx.fillText(t, x + R + 5, y - R + 2);
-        ctx.font = "700 10px -apple-system, Helvetica, Arial, sans-serif";
+        const names = [...emojiOf(c.leg).matchAll(/\{\{([\w-]+)\}\}/g)].map((m) => m[1]), bx = x + R + 4, by = y - R - 13, bw = names.length * 18 + 4;
+        ctx.save(); ctx.globalAlpha = 0.85; ctx.fillStyle = D.col.edge; ctx.beginPath(); ctx.roundRect(bx, by, bw, 20, 6); ctx.fill(); ctx.restore();
+        names.forEach((n, i) => { const im = LI.img(n, D.col.text, 16); if (im.complete) ctx.drawImage(im, bx + 3 + i * 18, by + 2, 16, 16); });
       }
     }
   }
@@ -419,9 +419,9 @@
     schedule();
     D.sel = null; D.selInfo = 0; D.on = true; D.T = 0; D.base = 0; D.waves = [0]; D.loops = 0; D.lastWave = 0; D.interval = Math.max(2.5, D.total / 4); D.statAt = 0; D.col = null;
     resetDriveState();
-    $("chdrive").textContent = "■ Stop the cars"; D.paused = false; $("chpause").style.display = ""; $("chpause").textContent = "⏸ Pause";
+    LI.txt($("chdrive"), "{{square}} Stop the cars"); D.paused = false; $("chpause").style.display = ""; LI.txt($("chpause"), "{{pause}} Pause");
     $("info").innerHTML = `<div class="cols"><div><div class="k" style="color:var(--dim)">Cars</div><p>The cars are driving. The guide, the counts and the selected car are in the sidebar.</p></div><div></div></div>`;
-    $("carside").innerHTML = CARSIDE; document.body.classList.add("driveside");
+    $("carside").innerHTML = LI.tok(CARSIDE); document.body.classList.add("driveside");
     $("carcanvas").style.display = "block";
     const st = $("stage"); if (!$("chcam").checked) st.scrollTop = 0;
     D.last = performance.now(); CH.driveRaf = requestAnimationFrame(driveTick);
@@ -430,9 +430,9 @@
     D.on = false; cancelAnimationFrame(CH.driveRaf);
     if (D.ctx) { const cv = $("carcanvas"); D.ctx.clearRect(0, 0, cv.clientWidth, cv.clientHeight); }
     $("carcanvas").style.display = "none"; D.cars = []; D.screen = [];
-    Object.values(CH.els || {}).forEach((g) => { g.classList.remove("act"); if (g._bd) g._bd.textContent = ""; });
+    Object.values(CH.els || {}).forEach((g) => { g.classList.remove("act"); if (g._bd) g._bd.textContent = ""; if (g._bi) g._bi.style.display = "none"; });
     if (!done) Object.values(CH.els || {}).forEach((g) => g.classList.remove("dd"));
-    D.paused = false; $("chpause").style.display = "none"; $("chdrive").textContent = "🚗 Drive"; if (!done) $("chphase").textContent = "";
+    D.paused = false; $("chpause").style.display = "none"; LI.txt($("chdrive"), "{{car}} Drive"); if (!done) $("chphase").textContent = "";
   }
   function driveTick(ts) {
     if (!D.on) return;
@@ -477,7 +477,7 @@
     for (const r of act) if (!D.actSet.has(r)) { const g = CH.els[r]; if (g) g.classList.add("act"); }
     D.actSet = act;
     const seen = new Set([...Object.keys(inside), ...Object.keys(D.insideLast || {})]);
-    for (const r of seen) { const v = inside[r] || 0; if (v !== (D.insideLast[r] || 0)) { const g = CH.els[r]; if (g && g._bd) g._bd.textContent = v ? "🚗 ×" + v + " inside" : ""; } }
+    for (const r of seen) { const v = inside[r] || 0; if (v !== (D.insideLast[r] || 0)) { const g = CH.els[r]; if (g && g._bd) { g._bd.textContent = v ? "×" + v + " inside" : ""; g._bi.style.display = v ? "" : "none"; } } }
     D.insideLast = inside;
     const cur = D.waves[D.waves.length - 1] === undefined ? D.base : D.waves[D.waves.length - 1], lt = T - cur;
     if (ts - D.statAt > 250) {                                   // text updates 4x per second, not 60x
@@ -487,7 +487,7 @@
       $("chphase").textContent = D.paused ? "paused" : mode === "traffic" ? "traffic running…" : lt < D.total ? "cars driving…" : "finished one run";
     }
     if ($("chcam").checked && cars.length) { const st = $("stage"), k = csvg.clientWidth / CH.vw, yy = selPt ? selPt.y : ys / cars.length, want = yy * k - st.clientHeight * 0.45; st.scrollTop += (want - st.scrollTop) * 0.08; }
-    if (mode === "once" && lt0 >= D.total + 0.8) { driveStop(true); $("chphase").textContent = `finished: ${D.rootErr ? "the request ended with an ERROR 💥, " : ""}${D.upEnd.length} answers came back, ${D.voided.size} node(s) returned nothing`; return; }
+    if (mode === "once" && lt0 >= D.total + 0.8) { driveStop(true); $("chphase").textContent = `finished: ${D.rootErr ? "the request ended with an ERROR, " : ""}${D.upEnd.length} answers came back, ${D.voided.size} node(s) returned nothing`; return; }
     CH.driveRaf = requestAnimationFrame(driveTick);
   }
 
@@ -508,7 +508,7 @@
     $("path").textContent = "Chain · foldable · request goes down, the answer comes back up";
     $("title").textContent = resp.title || id; $("subtitle").textContent = resp.sub || "";
     $("chips").innerHTML = ""; $("chq").value = o.search || "";
-    $("info").innerHTML = `<div class="cols"><div><div class="k" style="color:var(--dim)">How to read</div><p>Each box is a function (or a group of them). <b>▸ n</b> opens what it calls. Solid line = the request going down, dashed = the answer coming back up. Double-click a box (or ▶ Follow) to watch a request travel down and the answer return. Search opens the path to every match.</p></div><div class="files"><div class="k" style="color:var(--dim)">Entry</div><div class="fn">${(resp.title || id).replace(/</g, "&lt;")}</div></div></div>`;
+    $("info").innerHTML = LI.tok(`<div class="cols"><div><div class="k" style="color:var(--dim)">How to read</div><p>Each box is a function (or a group of them). <b>{{chevron-right}} n</b> opens what it calls. Solid line = the request going down, dashed = the answer coming back up. Double-click a box (or {{play}} Follow) to watch a request travel down and the answer return. Search opens the path to every match.</p></div><div class="files"><div class="k" style="color:var(--dim)">Entry</div><div class="fn">${(resp.title || id).replace(/</g, "&lt;")}</div></div></div>`);
     applySearch(); render();
     location.hash = "chain:" + encodeURIComponent(id);
     window.__lastChain = id;
@@ -527,7 +527,7 @@
     csvg = el("svg", { xmlns: NS }); $("chainsvg").appendChild(csvg);
     $("chq").oninput = () => { if (D.on) { toast("Stop the cars first"); $("chq").value = CH.q; return; } CH.q = $("chq").value.trim().toLowerCase(); if (!CH.q) CH.hits = null; applySearch(); render(); };
     $("chdrive").onclick = driveStart;
-    const togglePause = () => { if (!D.on) return; D.paused = !D.paused; $("chpause").textContent = D.paused ? "▶ Resume" : "⏸ Pause"; $("chphase").textContent = D.paused ? "paused" : "cars driving…"; };
+    const togglePause = () => { if (!D.on) return; D.paused = !D.paused; LI.txt($("chpause"), D.paused ? "{{play}} Resume" : "{{pause}} Pause"); $("chphase").textContent = D.paused ? "paused" : "cars driving…"; };
     $("chpause").onclick = togglePause;
     document.addEventListener("keydown", (e) => { if (e.code !== "Space" || !D.on || /INPUT|TEXTAREA|SELECT|BUTTON/.test((e.target.tagName || ""))) return; e.preventDefault(); togglePause(); });
     $("stage").addEventListener("click", (e) => {
