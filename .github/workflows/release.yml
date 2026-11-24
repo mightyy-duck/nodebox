@@ -42,6 +42,7 @@ jobs:
       - name: Checksums
         run: cd files && sha256sum NodeBox-* > SHA256SUMS.txt && cat SHA256SUMS.txt
       - uses: actions/attest-build-provenance@v2
+        if: ${{ !github.event.repository.private }}   # GitHub offers this only for public repositories
         with:
           subject-path: files/NodeBox-*
       - uses: actions/upload-artifact@v4
