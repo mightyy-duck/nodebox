@@ -1,4 +1,6 @@
-# NodeBox
+<p align="center"><img src="docs/icon.png" alt="NodeBox icon" width="128"></p>
+
+<h1 align="center">NodeBox</h1>
 
 Point NodeBox at a **Node project folder** and it explains the project as animated flows:
 which route calls which function in which file, from the browser down to the database or cloud
