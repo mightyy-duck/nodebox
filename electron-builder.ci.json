@@ -1,0 +1,27 @@
+{
+  "appId": "local.nodebox.desktop",
+  "productName": "NodeBox",
+  "npmRebuild": false,
+  "asar": true,
+  "files": [
+    "src/**",
+    "web/**",
+    "package.json",
+    "node_modules/typescript/lib/typescript.js",
+    "node_modules/typescript/package.json",
+    "build/icon-source.png"
+  ],
+  "electronVersion": "45.4.1",
+  "directories": { "output": "dist-ci" },
+  "mac": {
+    "category": "public.app-category.developer-tools",
+    "identity": null,
+    "icon": "build/icon.icns",
+    "artifactName": "NodeBox-${version}-mac-${arch}.${ext}"
+  },
+  "win": {
+    "icon": "build/icon-source.png",
+    "artifactName": "NodeBox-${version}-win-${arch}.${ext}"
+  },
+  "msi": { "oneClick": false, "perMachine": false, "createDesktopShortcut": true, "createStartMenuShortcut": true, "runAfterFinish": false }
+}
