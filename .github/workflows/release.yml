@@ -25,7 +25,7 @@ jobs:
       - run: npm install
       - run: npm install --no-save electron@45.4.1 electron-builder@26.18.0
       - run: npm test
-      - run: npx electron-builder --config electron-builder.ci.json ${{ matrix.args }}
+      - run: npx electron-builder --config electron-builder.ci.json --publish never ${{ matrix.args }}
       - uses: actions/upload-artifact@v4
         with:
           name: NodeBox-${{ matrix.os }}
