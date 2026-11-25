@@ -1,0 +1,47 @@
+{
+  "name": "Items demo",
+  "note": "Example of hand-written flows for test/fixture. Try: node bin/nodebox.js check test/fixture --flows examples/items.flows.json",
+  "laneNames": { "you": "PEOPLE", "ui": "BROWSER / UI", "srv": "SERVER", "db": "DATA STORES", "az": "CLOUD" },
+  "categories": [
+    {
+      "name": "Dataflow",
+      "color": "#38d9ff",
+      "items": [
+        {
+          "id": "list-items",
+          "title": "Show the items",
+          "sub": "From the list component down to the database and back",
+          "steps": [
+            {
+              "kind": "browser",
+              "t": "The list asks for items",
+              "d": "The List component calls the items API.",
+              "detail": "loadItems() sends GET /api/items and reads the JSON answer.",
+              "lane": "ui",
+              "name": "components/List.tsx",
+              "files": [["components/List.tsx", "List(), loadItems()"]]
+            },
+            {
+              "kind": "server",
+              "t": "The API route",
+              "d": "GET /api/items returns the items as JSON.",
+              "detail": "The route does no work itself: it asks getItems() and wraps the result.",
+              "lane": "srv",
+              "name": "app/api/items/route.ts",
+              "files": [["app/api/items/route.ts", "GET()"], ["lib/items.ts", "getItems()"]]
+            },
+            {
+              "kind": "data",
+              "t": "The database",
+              "d": "All items, newest first.",
+              "detail": "listItems() runs one SQL query through the pg pool.",
+              "lane": "db",
+              "name": "lib/db.ts",
+              "files": [["lib/db.ts", "listItems()"]]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

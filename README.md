@@ -67,7 +67,7 @@ Put a `flows.json` in one of these places (first found wins):
 2. `<project>/.nodebox/flows.json`
 3. `~/.nodebox/flows/<package name>.json`
 
-Shape: see `examples/ACF-Extension.flows.json`. Each step has `kind`, `lane`, `t` (title), `d` (one line),
+Shape: see `examples/items.flows.json`. Each step has `kind`, `lane`, `t` (title), `d` (one line),
 `detail`, `name` and `files: [["path/file.ts", "functionA(), functionB()"]]`.
 NodeBox checks every file and `function()` named there against the code: a step whose code was
 renamed or deleted shows **⚠** (in the app and with `nodebox check`). So the explanations cannot
